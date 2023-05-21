@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
@@ -17,13 +18,24 @@ namespace Assets.Scripts
         [SerializeField]
         private ARCameraManager cameraManager;
         [SerializeField]
-        private List<Target> navigationTargetObjects = new List<Target>();
-        [SerializeField]
         private GameObject qrCodeScanningPanel;
+
+        [SerializeField]
+        private GameObject qrCodes;
 
         private Texture2D cameraImageTexture;
         private IBarcodeReader reader = new BarcodeReader(); // create a barcode reader instance
 		private bool scanningEnabled = false;
+
+        private Target findTarget(string targetText)
+        {
+            //Target currentTarget = navigationTargetObjects.Find(x => x.Name.ToLower().Equals(targetText.ToLower()));
+            GameObject gameObject = GameObject.Find(targetText);
+            Target target = new Target();
+            target.PositionObject = gameObject;
+            target.Name = targetText;
+            return target;
+        }
 
         private void Update()
         {
@@ -127,7 +139,7 @@ namespace Assets.Scripts
 
         private void SetQrCodeRecenterTarget(string targetText)
         {
-            Target currentTarget = navigationTargetObjects.Find(x => x.Name.ToLower().Equals(targetText.ToLower()));
+            Target currentTarget = findTarget(targetText);
             if (currentTarget != null)
             {
                 // Reset position and rotation of ARSession
