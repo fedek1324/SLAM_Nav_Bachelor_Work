@@ -29,7 +29,7 @@ namespace Assets.Scripts
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SetQrCodeRecenterTarget("Column");
+                SetQrCodeRecenterTarget("GISColumnFloor");
             }
             if (Input.GetKeyDown(KeyCode.Z))
             {

@@ -39,11 +39,18 @@ public class SetNavigationTarget : MonoBehaviour
     {
         if (lineToggle && targetPosition != Vector3.zero)
         {
-            NavMesh.CalculatePath(transform.position, targetPosition, NavMesh.AllAreas, path);
+            NavMesh.CalculatePath(SetPositionOffset(transform.position), targetPosition, NavMesh.AllAreas, path);
             line.positionCount = path.corners.Length;
             Vector3[] calculatedPathAndOffset = AddLineOffset();
             line.SetPositions(calculatedPathAndOffset);
         }
+    }
+
+    private Vector3 SetPositionOffset(Vector3 position)
+    {
+        // to NavMesh choose right navMesh
+        float offset = 1.5f;
+        return position + new Vector3(0, position.y - offset, 0);
     }
 
     private Vector3[] AddLineOffset()
