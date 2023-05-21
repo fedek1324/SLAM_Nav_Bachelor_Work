@@ -14,6 +14,8 @@ public class SetNavigationTarget : MonoBehaviour
     [SerializeField]
     private Slider navigationYOffset;
 
+    private float yOffset = -1.5f;
+
     //[SerializeField]
     //private Camera topDownCamera;
 
@@ -49,8 +51,7 @@ public class SetNavigationTarget : MonoBehaviour
     private Vector3 SetPositionOffset(Vector3 position)
     {
         // to NavMesh choose right navMesh
-        float offset = 1.5f;
-        return position + new Vector3(0, position.y - offset, 0);
+        return position + new Vector3(0, yOffset, 0);
     }
 
     private Vector3[] AddLineOffset()
