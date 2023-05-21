@@ -20,9 +20,6 @@ namespace Assets.Scripts
         [SerializeField]
         private GameObject qrCodeScanningPanel;
 
-        [SerializeField]
-        private GameObject qrCodes;
-
         private Texture2D cameraImageTexture;
         private IBarcodeReader reader = new BarcodeReader(); // create a barcode reader instance
 		private bool scanningEnabled = false;
