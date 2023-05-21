@@ -38,7 +38,7 @@ namespace Assets.Scripts
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SetQrCodeRecenterTarget("3FloorStairs1QrFloor");
+                SetQrCodeRecenterTarget("3FloorStairs1QrWall");
             }
             if (Input.GetKeyDown(KeyCode.Z))
             {
@@ -54,7 +54,7 @@ namespace Assets.Scripts
             }
             if (Input.GetKeyDown(KeyCode.E))
             {
-                SetQrCodeRecenterTarget("MainEntrance2LeftColumn");
+                SetQrCodeRecenterTarget("MainEntrance2LeftColumnQrFloor");
             }
         }
         private void OnEnable()
