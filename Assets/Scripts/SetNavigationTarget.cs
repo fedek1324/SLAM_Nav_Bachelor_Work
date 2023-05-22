@@ -15,6 +15,7 @@ public class SetNavigationTarget : MonoBehaviour
     private Slider navigationYOffset;
 
     private float yOffset = -1.5f;
+    private Target currentTarget;
 
     //[SerializeField]
     //private Camera topDownCamera;
@@ -74,9 +75,14 @@ public class SetNavigationTarget : MonoBehaviour
     {
         targetPosition = Vector3.zero;
         string selectedText = navigationTargetDropDown.options[selectedValue].text;
-        Target currentTarget = navigationTargetObjects.Find(x => x.Name.Equals(selectedText));
         if (currentTarget != null)
         {
+            currentTarget.PositionObject.SetActive(false); // disable prev target visibility
+        }
+        currentTarget = navigationTargetObjects.Find(x => x.Name.Equals(selectedText));
+        if (currentTarget != null)
+        {
+            currentTarget.PositionObject.SetActive(true);
             if (!line.enabled)
             {
                 ToggleVisibility();
