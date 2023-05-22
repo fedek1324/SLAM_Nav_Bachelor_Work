@@ -134,7 +134,7 @@ namespace Assets.Scripts
             }
         }
 
-        private void SetQrCodeRecenterTarget(string targetText)
+        public void SetQrCodeRecenterTarget(string targetText)
         {
             Target currentTarget = findTarget(targetText);
             if (currentTarget != null)
