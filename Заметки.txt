@@ -4,3 +4,12 @@
 Если работаем с Кодом на полу то встаём ровно над ним высота без разницы какая и включаем сканер. цЕНтр кода лежит на линии (плоскости) сткны столба. 
 
 После сканирования QR кода системе нужна в сцене Unity только позиция, угол указывать нен ужно. система сама определит угол наклона камеры с помощью системного барометра или как это назвать компаса. Но определит она его только когда получит геометрию в поле зрения чтобы уже от неё плясать. То есть алгоритм такой 1) скан QR кода 2) поиск геометрии на камере 3) получение угола наклона камеры и начало работы
+
+
+https://github.com/Unity-Technologies/arfoundation-samples/issues/990
+https://github.com/Unity-Technologies/arfoundation-samples/issues/119
+https://answers.unity.com/questions/140273/how-to-get-current-camera-coordinates-in-a-script.html
+https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.1/manual/features/image-tracking.html
+https://github.com/Unity-Technologies/arfoundation-samples#image-tracking
+
+https://docs.unity3d.com/2021.3/Documentation/Manual/NavMesh-BuildingComponents.html
