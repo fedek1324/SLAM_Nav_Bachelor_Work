@@ -11,5 +11,6 @@ https://github.com/Unity-Technologies/arfoundation-samples/issues/119
 https://answers.unity.com/questions/140273/how-to-get-current-camera-coordinates-in-a-script.html
 https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.1/manual/features/image-tracking.html
 https://github.com/Unity-Technologies/arfoundation-samples#image-tracking
+https://medium.com/dscvitpune/quick-introduction-to-image-tracking-using-ar-foundation-dea7d2fbdfe9
 
 https://docs.unity3d.com/2021.3/Documentation/Manual/NavMesh-BuildingComponents.html
