@@ -15,6 +15,7 @@ public class ArQrScript : MonoBehaviour
     [SerializeField]
     private GameObject indicator;
 
+
     public void OnEnable() {m_TrackedImageManager.trackedImagesChanged += OnChanged; textField.text = $"Qr script started"; }
 
     public void OnDisable() { m_TrackedImageManager.trackedImagesChanged -= OnChanged; textField.text = $"Qr script stopped"; }
