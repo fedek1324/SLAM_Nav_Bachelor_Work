@@ -9,6 +9,9 @@
 
 После вызова Recenter метода координаты уже считаются по другому
 
+Как то чудом настроил отладку приложения при запуске с телефона. Сделал через JetBrains Rider. Там вывел как то список процессов и нажал на телефонный. При этом в Unity нужно в Build Setting поставить Development Build и Wait for managed begudder
+ 
+
 https://github.com/Unity-Technologies/arfoundation-samples/issues/990
 https://github.com/Unity-Technologies/arfoundation-samples/issues/119
 https://answers.unity.com/questions/140273/how-to-get-current-camera-coordinates-in-a-script.html
@@ -27,3 +30,6 @@ https://docs.unity3d.com/ScriptReference/Vector3.html
 
 https://docs.unity3d.com/Manual/class-LineRenderer.html
 https://docs.unity3d.com/2021.3/Documentation/Manual/NavMesh-BuildingComponents.html
+https://gamedev.stackexchange.com/questions/130210/how-can-create-line-renderer-runtime-when-player-in-gravity
+
+https://www.jetbrains.com/help/rider/Debugging_Unity_Applications.html#debug_usb

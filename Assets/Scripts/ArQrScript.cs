@@ -83,7 +83,7 @@ public class ArQrScript : MonoBehaviour
         //          $"{newImage.transform.position}");
         //}
 
-        foreach (var trackedImage in eventArgs.updated)
+        foreach (ARTrackedImage trackedImage in eventArgs.updated)
         {
             // Handle updated event
             Vector3 imagePos = trackedImage.transform.position;
@@ -96,7 +96,7 @@ public class ArQrScript : MonoBehaviour
                 + $"Image: {trackedImage.referenceImage.name} is at " + $"{imagePos}.\n" +
                   $"Indicator pos: {currentPos}\n" +
                   $"Difference vector: {differenceVec}\nDistance: {Vector3.Distance(currentPos, imagePos)}\n" +
-                  $"Angle: {Vector3.Angle(currentPos, imagePos)}";
+                  $"Size {trackedImage.gameObject}";
 
             if (firstText == "")
             {
