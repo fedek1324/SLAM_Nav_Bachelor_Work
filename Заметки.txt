@@ -3,8 +3,11 @@
 Если работаем с QR кодам на стене то ставим камеру так чтобы было 50 проц стены 50 проц другого и включаем сканер QR кода, так чтобы он попал в камеру, встаём на 0.5 метра. Код висит на краю столба
 Если работаем с Кодом на полу то встаём ровно над ним высота без разницы какая и включаем сканер. цЕНтр кода лежит на линии (плоскости) сткны столба. 
 
-После сканирования QR кода системе нужна в сцене Unity только позиция, угол указывать нен ужно. система сама определит угол наклона камеры с помощью системного барометра или как это назвать компаса. Но определит она его только когда получит геометрию в поле зрения чтобы уже от неё плясать. То есть алгоритм такой 1) скан QR кода 2) поиск геометрии на камере 3) получение угола наклона камеры и начало работы
+После сканирования QR кода системе нужна в сцене Unity только позиция, угол указывать нен ужно. система сама определит угол наклона камеры с помощью системного барометра или как это назвать компаса. Но определит она его только когда получит геометрию в поле зрения чтобы уже от неё плясать. То есть алгоритм такой 1) скан QR кода 2) поиск геометрии на камере 3) получение угола наклона камеры по внутреннему компасу и начало работы
 
+Получилось создать функцию которая считывает позицию камеры при сканере QR кода. => и расстояние. То считает вектор позиции - вектор картинки = вектор смещения сканирующего в системе координат где Z направлена от меня. => нужно изменить эту систему координат (X направо Y вверх Z от себя). повернув на 135 градусов по часовой стрелке. И всё таки это зависит от QR кода. Нужно поворачивать систему координат эту локальную, при сканировании которая в соответствии с qr кодом.
+
+После вызова Recenter метода координаты уже считаются по другому
 
 https://github.com/Unity-Technologies/arfoundation-samples/issues/990
 https://github.com/Unity-Technologies/arfoundation-samples/issues/119
@@ -12,5 +15,15 @@ https://answers.unity.com/questions/140273/how-to-get-current-camera-coordinates
 https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@5.1/manual/features/image-tracking.html
 https://github.com/Unity-Technologies/arfoundation-samples#image-tracking
 https://medium.com/dscvitpune/quick-introduction-to-image-tracking-using-ar-foundation-dea7d2fbdfe9
+https://docs.unity3d.com/Manual/index.html
+https://www.codeproject.com/Articles/1250071/QR-Code-Encoder-and-Decoder-Csharp-Class-Library-f
+https://localjoost.github.io/Positioning-QR-codes-in-space-with-HoloLens-2-building-a-'poor-man's-Vuforia'/
 
+https://forum.unity.com/threads/how-do-you-rotate-a-vector.46764/
+https://docs.unity3d.com/ScriptReference/Quaternion-y.html
+https://vionixstudio.com/2022/06/16/unity-quaternion-and-rotation-guide/
+https://docs.unity3d.com/ScriptReference/Quaternion-operator_multiply.html
+https://docs.unity3d.com/ScriptReference/Vector3.html
+
+https://docs.unity3d.com/Manual/class-LineRenderer.html
 https://docs.unity3d.com/2021.3/Documentation/Manual/NavMesh-BuildingComponents.html
