@@ -34,6 +34,9 @@ public class ArQrScript : MonoBehaviour
     [SerializeField]
     private GameObject lineRenderer3;
 
+    [SerializeField]
+    private GameObject scannedImageCube;
+
 
     public void OnEnable() 
     {
@@ -53,12 +56,14 @@ public class ArQrScript : MonoBehaviour
         OnDisable();
         textField.text = $"Qr script started!!!!!!";
         lineRenderer.enabled = false;
-        LineRenderer lr2 = lineRenderer2.GetComponent<LineRenderer>();
-        lr2.enabled = false;
         LineRenderer lr1 = lineRenderer1.GetComponent<LineRenderer>();
         lr1.enabled = false;
+        LineRenderer lr2 = lineRenderer2.GetComponent<LineRenderer>();
+        lr2.enabled = false;
         LineRenderer lr3 = lineRenderer3.GetComponent<LineRenderer>();
         lr3.enabled = false;
+
+        scannedImageCube.SetActive(false);
 
     }
 
@@ -67,8 +72,9 @@ public class ArQrScript : MonoBehaviour
         return Quaternion.AngleAxis(angle, Vector3.up) * vector; // Vector.up represents Y axis
     }
 
-    public void SetQrCodeRecenterTarget(string targetText, Vector3 offset)
+    public void SetQrCodeRecenterTarget(string targetText, Vector3 vector1, Vector3 vector2)
     {
+        Vector3 offset = vector2 - vector1;
         GameObject qrCodePositionObject = GameObject.Find(targetText); //target obj
         if (qrCodePositionObject != null)
         {
@@ -78,10 +84,12 @@ public class ArQrScript : MonoBehaviour
             Vector3 qrCodePositionObjectPos = qrCodePositionObject.transform.position;
             Quaternion qrCodePositionObjectRot = qrCodePositionObject.transform.rotation;
             textField2.text = $"{qrCodePositionObjectRot.eulerAngles.y}";
-            //Vector3 offsetInGlobalCords = RotateVectorAroundY(offset, qrCodePositionObjectRot.eulerAngles.y);
+            Vector3 offsetRelativeToNewQr = RotateVectorAroundY(offset, qrCodePositionObjectRot.eulerAngles.y);
 
-            sessionOrigin.transform.position = qrCodePositionObject.transform.position + offset;
-            sessionOrigin.transform.rotation = qrCodePositionObject.transform.rotation;
+            sessionOrigin.transform.position = qrCodePositionObjectPos + offsetRelativeToNewQr;
+            sessionOrigin.transform.rotation = qrCodePositionObjectRot;
+
+            VisualizeVectorsDifference(qrCodePositionObjectPos, qrCodePositionObjectPos + offsetRelativeToNewQr);
             //// Add offset for recentering - distance to QR
             //sessionOrigin.transform.position = new Vector3(
             //    (float)(gameObjectPos.x + System.Math.Cos(System.Math.PI/4)), 
@@ -115,8 +123,9 @@ public class ArQrScript : MonoBehaviour
             Vector3 differenceVec = currentPos - imagePos;
 
             //trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, -trackedImage.referenceImage.size.y);
-            trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, trackedImage.referenceImage.size.y, 0.005f);
-
+            trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, trackedImage.referenceImage.size.y);
+            scannedImageCube.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, trackedImage.referenceImage.size.y, trackedImage.referenceImage.size.y);
+            scannedImageCube.SetActive(true);
 
 
             string msg = $"There are {m_TrackedImageManager.trackables.count} images being tracked.\n"
@@ -130,33 +139,13 @@ public class ArQrScript : MonoBehaviour
                 firstText = msg;
                 //SetQrCodeRecenterTarget(trackedImage.referenceImage.name, differenceVec);
 
-                lineRenderer.enabled = true;
-                lineRenderer.SetPosition(0, currentPos);
-                lineRenderer.SetPosition(1, imagePos);
-                
-                LineRenderer lr1 = lineRenderer1.GetComponent<LineRenderer>(); 
-                lr1.enabled = true;
-                lr1.SetPosition(0, imagePos);
-                float dx = differenceVec.x;
-                Vector3 dxRepresent = new Vector3(dx, 0, 0) + imagePos;
-                lr1.SetPosition(1, dxRepresent);
-
-                LineRenderer lr2 = lineRenderer2.GetComponent<LineRenderer>();
-                lr2.enabled = true;
-                lr2.SetPosition(0, dxRepresent);
-                Vector3 dyRepresent = new Vector3(0, differenceVec.y, 0) + dxRepresent;
-                lr2.SetPosition(1, dyRepresent);
-
-                LineRenderer lr3 = lineRenderer3.GetComponent<LineRenderer>();
-                lr3.enabled = true;
-                lr3.SetPosition(0, dyRepresent);
-                lr3.SetPosition(1, new Vector3(0, 0, differenceVec.z) + dyRepresent);
-
                 // LineRenderer lr1 = new GameObject().AddComponent<LineRenderer>();
                 // lr1.gameObject.transform.SetParent(transform, false);
                 // // just to be sure reset position and rotation as well
                 // lr1.gameObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-                SetQrCodeRecenterTarget(trackedImage.referenceImage.name, differenceVec);
+                //VisualizeVectorsDifference(imagePos, currentPos);
+                SetQrCodeRecenterTarget(trackedImage.referenceImage.name, imagePos, currentPos);
+                m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
             }
             textField.text = firstText + "\n\n" + msg;
             //OnDisable();
@@ -168,6 +157,31 @@ public class ArQrScript : MonoBehaviour
         //    // Handle removed event
         //    textField.text = $"There are {m_TrackedImageManager.trackables.count} images being tracked." + ($"Image: {removedImage.referenceImage.name} is REMOVED");
         //}
+    }
+
+    private void VisualizeVectorsDifference(Vector3 vector1, Vector3 vector2)
+    {
+        lineRenderer.enabled = true;
+        lineRenderer.SetPosition(0, vector1);
+        lineRenderer.SetPosition(1, vector2);
+
+        LineRenderer lr1 = lineRenderer1.GetComponent<LineRenderer>();
+        lr1.enabled = true;
+        lr1.SetPosition(0, vector2);
+        float dx = vector2.x;
+        Vector3 dxRepresent = new Vector3(dx, 0, 0) + vector2;
+        lr1.SetPosition(1, dxRepresent);
+
+        LineRenderer lr2 = lineRenderer2.GetComponent<LineRenderer>();
+        lr2.enabled = true;
+        lr2.SetPosition(0, dxRepresent);
+        Vector3 dyRepresent = new Vector3(0, vector2.y, 0) + dxRepresent;
+        lr2.SetPosition(1, dyRepresent);
+
+        LineRenderer lr3 = lineRenderer3.GetComponent<LineRenderer>();
+        lr3.enabled = true;
+        lr3.SetPosition(0, dyRepresent);
+        lr3.SetPosition(1, new Vector3(0, 0, vector2.z) + dyRepresent);
     }
 
 }
