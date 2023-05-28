@@ -13,6 +13,8 @@ public class ArQrScript : MonoBehaviour
     //ARTrackedImageManager m_TrackedImageManager;
     [SerializeField]
     XRReferenceImageLibrary imageLibrary;
+    [SerializeField]
+    GameObject scannedImagePrefab;
 
     private ARTrackedImageManager m_TrackedImageManager;
 
@@ -39,26 +41,24 @@ public class ArQrScript : MonoBehaviour
     [SerializeField]
     private GameObject lineRenderer3;
 
-    [SerializeField]
-    private GameObject scannedImageCube;
 
 
-    public void EnableScanner() 
-    {
-        m_TrackedImageManager.trackedImagesChanged += OnChanged; 
-        textField.text = $"Qr script started";
-        //m_TrackedImageManager.enabled = true; 
-    }
+    //public void EnableScannerActions() 
+    //{
+    //    m_TrackedImageManager.trackedImagesChanged += OnChanged;
+    //    textField.text = $"Action handle enabled";
+    //    //m_TrackedImageManager.enabled = true; 
+    //}
 
-    public void DisableScanner() { 
-        m_TrackedImageManager.trackedImagesChanged -= OnChanged; 
-        textField.text += $"\nQr script stopped"; 
-        //m_TrackedImageManager.enabled = false; 
-    }
+    //public void DisableScannerActions() { 
+    //    m_TrackedImageManager.trackedImagesChanged -= OnChanged; 
+    //    textField.text += $"\nAction handle stopped"; 
+    //    //m_TrackedImageManager.enabled = false; 
+    //}
 
     private void Start()
     {
-        textField.text = $"Qr script started!!!!!!";
+        textField.text = $"Qr script started! Creating manager";
         lineRenderer.enabled = false;
         LineRenderer lr1 = lineRenderer1.GetComponent<LineRenderer>();
         lr1.enabled = false;
@@ -67,13 +67,20 @@ public class ArQrScript : MonoBehaviour
         LineRenderer lr3 = lineRenderer3.GetComponent<LineRenderer>();
         lr3.enabled = false;
 
-        scannedImageCube.SetActive(false); // this cube never appears TODO - delete
+        InitTrackedImageManager();
 
-        m_TrackedImageManager = gameObject.AddComponent<ARTrackedImageManager>();
+    }
+
+    public void InitTrackedImageManager()
+    {
+        m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
         m_TrackedImageManager.referenceLibrary = imageLibrary;
         m_TrackedImageManager.enabled = true;
-        // add prefab and max pics count
-
+        m_TrackedImageManager.requestedMaxNumberOfMovingImages = 1;
+        m_TrackedImageManager.maxNumberOfMovingImages = 1;
+        m_TrackedImageManager.trackedImagePrefab = scannedImagePrefab;
+        m_TrackedImageManager.trackedImagesChanged += OnChanged;
+        textField.text = $"Loaded tracking manager";
     }
 
     private Vector3 RotateVectorAroundY(Vector3 vector, float angle)
@@ -98,7 +105,7 @@ public class ArQrScript : MonoBehaviour
             sessionOrigin.transform.position = qrCodePositionObjectPos + offsetRelativeToNewQr;
             sessionOrigin.transform.rotation = qrCodePositionObjectRot;
 
-            VisualizeVectorsDifference(qrCodePositionObjectPos, qrCodePositionObjectPos + offsetRelativeToNewQr);
+            //VisualizeVectorsDifference(qrCodePositionObjectPos, qrCodePositionObjectPos + offsetRelativeToNewQr);
             //// Add offset for recentering - distance to QR
             //sessionOrigin.transform.position = new Vector3(
             //    (float)(gameObjectPos.x + System.Math.Cos(System.Math.PI/4)), 
@@ -114,11 +121,12 @@ public class ArQrScript : MonoBehaviour
     {
         foreach (var trackedImage in m_TrackedImageManager.trackables)
         {
-
+            trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, trackedImage.referenceImage.size.y);
         }
 
         //foreach (var newImage in eventArgs.added)
         //{
+        //    BAD POSITIONING HERE
         //    // Handle added event
         //    textField.text = $"There are {m_TrackedImageManager.trackables.count} images being tracked.\n" + ($"Image: {newImage.referenceImage.name} is NEW at " +
         //          $"{newImage.transform.position}");
@@ -131,10 +139,7 @@ public class ArQrScript : MonoBehaviour
             Vector3 currentPos = indicator.gameObject.transform.position;
             Vector3 differenceVec = currentPos - imagePos;
 
-            //trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, -trackedImage.referenceImage.size.y);
-            trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, trackedImage.referenceImage.size.y);
-            scannedImageCube.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, trackedImage.referenceImage.size.y, trackedImage.referenceImage.size.y);
-            scannedImageCube.SetActive(true);
+            VisualizePointsDifference(imagePos, currentPos);
 
 
             string msg = $"There are {m_TrackedImageManager.trackables.count} images being tracked.\n"
@@ -154,8 +159,7 @@ public class ArQrScript : MonoBehaviour
                 // lr1.gameObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
 
                 //VisualizeVectorsDifference(imagePos, currentPos);
-                SetQrCodeRecenterTarget(trackedImage.referenceImage.name, imagePos, currentPos);
-
+                //SetQrCodeRecenterTarget(trackedImage.referenceImage.name, imagePos, currentPos);
             }
             textField.text = firstText + "\n\n" + msg;
             //OnDisable();
@@ -169,29 +173,34 @@ public class ArQrScript : MonoBehaviour
         //}
     }
 
-    private void VisualizeVectorsDifference(Vector3 vector1, Vector3 vector2)
+    private void VisualizePointsDifference(Vector3 vector1, Vector3 vector2)
     {
         lineRenderer.enabled = true;
         lineRenderer.SetPosition(0, vector1);
         lineRenderer.SetPosition(1, vector2);
 
+        Vector3 difference = vector2 - vector1;
+
+        //float dx = System.Math.Abs(vector2.x - vector1.x);
+        //float dy = System.Math.Abs(vector2.y - vector1.y);
+        //float dz = System.Math.Abs(vector2.z - vector1.z);
+
         LineRenderer lr1 = lineRenderer1.GetComponent<LineRenderer>();
         lr1.enabled = true;
-        lr1.SetPosition(0, vector2);
-        float dx = vector2.x;
-        Vector3 dxRepresent = new Vector3(dx, 0, 0) + vector2;
+        lr1.SetPosition(0, vector1);
+        Vector3 dxRepresent = new Vector3(difference.x, 0, 0) + vector1;
         lr1.SetPosition(1, dxRepresent);
 
         LineRenderer lr2 = lineRenderer2.GetComponent<LineRenderer>();
         lr2.enabled = true;
         lr2.SetPosition(0, dxRepresent);
-        Vector3 dyRepresent = new Vector3(0, vector2.y, 0) + dxRepresent;
+        Vector3 dyRepresent = new Vector3(0, difference.y, 0) + dxRepresent;
         lr2.SetPosition(1, dyRepresent);
 
         LineRenderer lr3 = lineRenderer3.GetComponent<LineRenderer>();
         lr3.enabled = true;
         lr3.SetPosition(0, dyRepresent);
-        lr3.SetPosition(1, new Vector3(0, 0, vector2.z) + dyRepresent);
+        lr3.SetPosition(1, new Vector3(0, 0, difference.z) + dyRepresent);
     }
 
 }
