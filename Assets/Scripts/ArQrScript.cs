@@ -45,6 +45,8 @@ public class ArQrScript : MonoBehaviour
 
     public void PlanRecenter() { plannedRecenter = true; textField.text += $"\nPlanned recenter"; }
 
+    // There were OnEnable and OnDisable were changing .trackedImagesChanged, i think that onEnable happens
+    // on start on when we activate this game object amd onDisable wjen we disable this game obj
 
     //public void EnableScannerActions() 
     //{
@@ -98,7 +100,7 @@ public class ArQrScript : MonoBehaviour
         if (qrCodePositionObject != null)
         {
             // Reset position and rotation of ARSession
-            session.Reset();
+            //session.Reset();
 
             Vector3 qrCodePositionObjectPos = qrCodePositionObject.transform.position;
             Quaternion qrCodePositionObjectRot = qrCodePositionObject.transform.rotation;
@@ -111,6 +113,8 @@ public class ArQrScript : MonoBehaviour
             textField.text += $"Offset after {offset}";
 
             VisualizePointsDifference(sessionOrigin.transform.position, qrCodePositionObjectPos);
+
+            //session.Reset();
 
             //VisualizeVectorsDifference(qrCodePositionObjectPos, qrCodePositionObjectPos + offsetRelativeToNewQr);
             //// Add offset for recentering - distance to QR
