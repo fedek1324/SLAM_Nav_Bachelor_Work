@@ -41,6 +41,9 @@ public class ArQrScript : MonoBehaviour
     [SerializeField]
     private GameObject lineRenderer3;
 
+    public bool plannedRecenter = false;
+
+    public void PlanRecenter() { plannedRecenter = true; textField.text += $"\nPlanned recenter"; }
 
 
     //public void EnableScannerActions() 
@@ -68,7 +71,6 @@ public class ArQrScript : MonoBehaviour
         lr3.enabled = false;
 
         InitTrackedImageManager();
-
     }
 
     public void InitTrackedImageManager()
@@ -105,6 +107,8 @@ public class ArQrScript : MonoBehaviour
             sessionOrigin.transform.position = qrCodePositionObjectPos + offsetRelativeToNewQr;
             sessionOrigin.transform.rotation = qrCodePositionObjectRot;
 
+            VisualizePointsDifference(sessionOrigin.transform.position, qrCodePositionObjectPos);
+
             //VisualizeVectorsDifference(qrCodePositionObjectPos, qrCodePositionObjectPos + offsetRelativeToNewQr);
             //// Add offset for recentering - distance to QR
             //sessionOrigin.transform.position = new Vector3(
@@ -112,8 +116,6 @@ public class ArQrScript : MonoBehaviour
             //    gameObjectPos.y,
             //    (float)(gameObjectPos.z + System.Math.Cos(System.Math.PI / 4))
             //    );
-
-
         }
     }
 
@@ -151,15 +153,11 @@ public class ArQrScript : MonoBehaviour
             if (firstText == "")
             {
                 firstText = msg;
-                //SetQrCodeRecenterTarget(trackedImage.referenceImage.name, differenceVec);
-
-                // LineRenderer lr1 = new GameObject().AddComponent<LineRenderer>();
-                // lr1.gameObject.transform.SetParent(transform, false);
-                // // just to be sure reset position and rotation as well
-                // lr1.gameObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-
-                //VisualizeVectorsDifference(imagePos, currentPos);
-                //SetQrCodeRecenterTarget(trackedImage.referenceImage.name, imagePos, currentPos);
+            }
+            if (plannedRecenter)
+            {
+                plannedRecenter = false;
+                SetQrCodeRecenterTarget(trackedImage.referenceImage.name, imagePos, currentPos);
             }
             textField.text = firstText + "\n\n" + msg;
             //OnDisable();
