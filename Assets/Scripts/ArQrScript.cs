@@ -9,8 +9,13 @@ using UnityEngine.XR.ARSubsystems;
 
 public class ArQrScript : MonoBehaviour
 {
+    //[SerializeField]
+    //ARTrackedImageManager m_TrackedImageManager;
     [SerializeField]
-    ARTrackedImageManager m_TrackedImageManager;
+    XRReferenceImageLibrary imageLibrary;
+
+    private ARTrackedImageManager m_TrackedImageManager;
+
     [SerializeField]
     Text textField;
     [SerializeField]
@@ -38,22 +43,21 @@ public class ArQrScript : MonoBehaviour
     private GameObject scannedImageCube;
 
 
-    public void OnEnable() 
+    public void EnableScanner() 
     {
         m_TrackedImageManager.trackedImagesChanged += OnChanged; 
+        textField.text = $"Qr script started";
         //m_TrackedImageManager.enabled = true; 
-        textField.text = $"Qr script started"; 
     }
 
-    public void OnDisable() { 
+    public void DisableScanner() { 
         m_TrackedImageManager.trackedImagesChanged -= OnChanged; 
-        //m_TrackedImageManager.enabled = false; 
         textField.text += $"\nQr script stopped"; 
+        //m_TrackedImageManager.enabled = false; 
     }
 
     private void Start()
     {
-        OnDisable();
         textField.text = $"Qr script started!!!!!!";
         lineRenderer.enabled = false;
         LineRenderer lr1 = lineRenderer1.GetComponent<LineRenderer>();
@@ -63,7 +67,12 @@ public class ArQrScript : MonoBehaviour
         LineRenderer lr3 = lineRenderer3.GetComponent<LineRenderer>();
         lr3.enabled = false;
 
-        scannedImageCube.SetActive(false);
+        scannedImageCube.SetActive(false); // this cube never appears TODO - delete
+
+        m_TrackedImageManager = gameObject.AddComponent<ARTrackedImageManager>();
+        m_TrackedImageManager.referenceLibrary = imageLibrary;
+        m_TrackedImageManager.enabled = true;
+        // add prefab and max pics count
 
     }
 
@@ -143,9 +152,10 @@ public class ArQrScript : MonoBehaviour
                 // lr1.gameObject.transform.SetParent(transform, false);
                 // // just to be sure reset position and rotation as well
                 // lr1.gameObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+
                 //VisualizeVectorsDifference(imagePos, currentPos);
                 SetQrCodeRecenterTarget(trackedImage.referenceImage.name, imagePos, currentPos);
-                m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
+
             }
             textField.text = firstText + "\n\n" + msg;
             //OnDisable();
