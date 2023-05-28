@@ -93,6 +93,7 @@ public class ArQrScript : MonoBehaviour
     public void SetQrCodeRecenterTarget(string targetText, Vector3 vector1, Vector3 vector2)
     {
         Vector3 offset = vector2 - vector1;
+        textField.text = $"Offset before {offset}";
         GameObject qrCodePositionObject = GameObject.Find(targetText); //target obj
         if (qrCodePositionObject != null)
         {
@@ -106,6 +107,8 @@ public class ArQrScript : MonoBehaviour
 
             sessionOrigin.transform.position = qrCodePositionObjectPos + offsetRelativeToNewQr;
             sessionOrigin.transform.rotation = qrCodePositionObjectRot;
+
+            textField.text += $"Offset after {offset}";
 
             VisualizePointsDifference(sessionOrigin.transform.position, qrCodePositionObjectPos);
 
@@ -141,7 +144,7 @@ public class ArQrScript : MonoBehaviour
             Vector3 currentPos = indicator.gameObject.transform.position;
             Vector3 differenceVec = currentPos - imagePos;
 
-            VisualizePointsDifference(imagePos, currentPos);
+            //VisualizePointsDifference(imagePos, currentPos); deleted bcs it overlays another func call after scan
 
 
             string msg = $"There are {m_TrackedImageManager.trackables.count} images being tracked.\n"
