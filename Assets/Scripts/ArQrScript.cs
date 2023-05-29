@@ -108,7 +108,7 @@ public class ArQrScript : MonoBehaviour
             Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y));
 
             sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
-            sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot);
+            sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
 
             textField.text += $"Offset after {offset}";
 
