@@ -89,30 +89,32 @@ public class ArQrScript : MonoBehaviour
 
     private Vector3 RotateVectorAroundY(Vector3 vector, float angle)
     {
-        return Quaternion.AngleAxis(angle, Vector3.up) * vector; // Vector.up represents Y axis
+        return Quaternion.AngleAxis(angle, Vector3.up) * CreateVectorCopy(vector); // Vector.up represents Y axis
     }
 
     public void SetQrCodeRecenterTarget(string targetText, Vector3 vector1, Vector3 vector2)
     {
-        Vector3 offset = vector2 - vector1;
+        Vector3 offset = CreateVectorCopy(vector2 - vector1);
         textField.text = $"Offset before {offset}";
-        GameObject qrCodePositionObject = GameObject.Find(targetText); //target obj
-        if (qrCodePositionObject != null)
+        GameObject qrCodePoint = GameObject.Find(targetText);
+        if (qrCodePoint != null)
         {
             // Reset position and rotation of ARSession
-            //session.Reset();
+            session.Reset();
 
-            Vector3 qrCodePositionObjectPos = qrCodePositionObject.transform.position;
-            Quaternion qrCodePositionObjectRot = qrCodePositionObject.transform.rotation;
-            textField2.text = $"{qrCodePositionObjectRot.eulerAngles.y}";
-            Vector3 offsetRelativeToNewQr = RotateVectorAroundY(offset, qrCodePositionObjectRot.eulerAngles.y);
+            Vector3 qrCodePointPos = CreateVectorCopy(qrCodePoint.transform.position);
+            Quaternion qrCodePointRot = CreateQuaternionCopy(qrCodePoint.transform.rotation);
+            textField2.text = $"{qrCodePointRot.eulerAngles.y}";
+            Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y));
 
-            sessionOrigin.transform.position = qrCodePositionObjectPos + offsetRelativeToNewQr;
-            sessionOrigin.transform.rotation = qrCodePositionObjectRot;
+            sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+            sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot);
 
             textField.text += $"Offset after {offset}";
 
-            VisualizePointsDifference(sessionOrigin.transform.position, qrCodePositionObjectPos);
+            VisualizePointsDifference(CreateVectorCopy(sessionOrigin.transform.position), CreateVectorCopy(qrCodePointPos));
+
+
 
             //session.Reset();
 
@@ -124,6 +126,12 @@ public class ArQrScript : MonoBehaviour
             //    (float)(gameObjectPos.z + System.Math.Cos(System.Math.PI / 4))
             //    );
         }
+    }
+
+    private void DisableScanner()
+    {
+        m_TrackedImageManager.trackedImagesChanged -= OnChanged;
+        m_TrackedImageManager.enabled = false;
     }
 
     void OnChanged(ARTrackedImagesChangedEventArgs eventArgs)
@@ -144,9 +152,9 @@ public class ArQrScript : MonoBehaviour
         foreach (ARTrackedImage trackedImage in eventArgs.updated)
         {
             // Handle updated event
-            Vector3 imagePos = trackedImage.transform.position;
-            Vector3 currentPos = indicator.gameObject.transform.position;
-            Vector3 differenceVec = currentPos - imagePos;
+            Vector3 imagePos = CreateVectorCopy(trackedImage.transform.position);
+            Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position);
+            Vector3 differenceVec = CreateVectorCopy(currentPos - imagePos);
 
             //VisualizePointsDifference(imagePos, currentPos); deleted bcs it overlays another func call after scan
 
@@ -164,7 +172,7 @@ public class ArQrScript : MonoBehaviour
             if (plannedRecenter)
             {
                 plannedRecenter = false;
-                SetQrCodeRecenterTarget(trackedImage.referenceImage.name, imagePos, currentPos);
+                SetQrCodeRecenterTarget(trackedImage.referenceImage.name, CreateVectorCopy(imagePos), CreateVectorCopy(currentPos));
             }
             textField.text = firstText + "\n\n" + msg;
             //OnDisable();
@@ -184,7 +192,7 @@ public class ArQrScript : MonoBehaviour
         lineRenderer.SetPosition(0, vector1);
         lineRenderer.SetPosition(1, vector2);
 
-        Vector3 difference = vector2 - vector1;
+        Vector3 difference = CreateVectorCopy(vector2 - vector1);
 
         //float dx = System.Math.Abs(vector2.x - vector1.x);
         //float dy = System.Math.Abs(vector2.y - vector1.y);
@@ -193,19 +201,29 @@ public class ArQrScript : MonoBehaviour
         LineRenderer lr1 = lineRenderer1.GetComponent<LineRenderer>();
         lr1.enabled = true;
         lr1.SetPosition(0, vector1);
-        Vector3 dxRepresent = new Vector3(difference.x, 0, 0) + vector1;
+        Vector3 dxRepresent = CreateVectorCopy(new Vector3(difference.x, 0, 0) + vector1);
         lr1.SetPosition(1, dxRepresent);
 
         LineRenderer lr2 = lineRenderer2.GetComponent<LineRenderer>();
         lr2.enabled = true;
         lr2.SetPosition(0, dxRepresent);
-        Vector3 dyRepresent = new Vector3(0, difference.y, 0) + dxRepresent;
+        Vector3 dyRepresent = CreateVectorCopy(new Vector3(0, difference.y, 0) + dxRepresent);
         lr2.SetPosition(1, dyRepresent);
 
         LineRenderer lr3 = lineRenderer3.GetComponent<LineRenderer>();
         lr3.enabled = true;
         lr3.SetPosition(0, dyRepresent);
-        lr3.SetPosition(1, new Vector3(0, 0, difference.z) + dyRepresent);
+        lr3.SetPosition(1, CreateVectorCopy(new Vector3(0, 0, difference.z) + dyRepresent));
+    }
+
+    private Vector3 CreateVectorCopy(Vector3 initialVector)
+    {
+        return new Vector3(initialVector.x, initialVector.y, initialVector.z);
+    }
+
+    private Quaternion CreateQuaternionCopy(Quaternion initialQuaternion)
+    {
+        return new Quaternion(initialQuaternion.x, initialQuaternion.y, initialQuaternion.z, initialQuaternion.w);
     }
 
 }
