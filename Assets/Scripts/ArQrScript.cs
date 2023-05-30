@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -99,8 +100,9 @@ public class ArQrScript : MonoBehaviour
         return Quaternion.AngleAxis(angle, Vector3.up) * CreateVectorCopy(vector); // Vector.up represents Y axis
     }
 
-    public void SetQrCodeRecenterTarget(string targetText, Vector3 imagePos, Vector3 currPos, Quaternion yImageRot)
+    public void SetQrCodeRecenterTarget(string targetText, Vector3 imagePos, Vector3 currPos, Quaternion imageRot)
     {
+        // Maybe get currPos from sessionOrigin
         Vector3 offset = CreateVectorCopy(currPos - imagePos);
         textField.text = $"Offset before {offset}";
         GameObject qrCodePoint = GameObject.Find(targetText);
@@ -115,7 +117,15 @@ public class ArQrScript : MonoBehaviour
             Vector3 qrCodePointPos = CreateVectorCopy(qrCodePoint.transform.position);
             Quaternion qrCodePointRot = CreateQuaternionCopy(qrCodePoint.transform.rotation);
             textField2.text = $"{qrCodePointRot.eulerAngles.y}";
-            Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y - yImageRot.eulerAngles.y));
+            Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y));
+
+            // calculates bad if a spawn with angle
+            Vector3 rotation = CreateVectorCopy(sessionOrigin.transform.rotation.eulerAngles);
+            rotation.y += qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y;
+            Quaternion newRot = ToQ(rotation.y, rotation.x, rotation.z);
+            
+            // Quaternion copy = ToQ(qrCodePointRot.eulerAngles.y, qrCodePointRot.eulerAngles.x, qrCodePointRot.eulerAngles.z); // YXZ
+            // textField2.text += $"\n qrCodeQuaternion: {qrCodePointRot}\nCopy: {copy}";
 
             sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
@@ -151,7 +161,7 @@ public class ArQrScript : MonoBehaviour
         foreach (var trackedImage in m_TrackedImageManager.trackables)
         {
             trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, trackedImage.referenceImage.size.y);
-            //trackedImage.transform.position += totalOffset;
+            trackedImage.transform.position += totalOffset;
         }
 
         //foreach (var newImage in eventArgs.added)
@@ -239,4 +249,26 @@ public class ArQrScript : MonoBehaviour
         return new Quaternion(initialQuaternion.x, initialQuaternion.y, initialQuaternion.z, initialQuaternion.w);
     }
 
+    private Quaternion ToQ(float yaw, float pitch, float roll)
+    {
+        yaw *= Mathf.Deg2Rad;
+        pitch *= Mathf.Deg2Rad;
+        roll *= Mathf.Deg2Rad;
+        float rollOver2 = roll * 0.5f;
+        float sinRollOver2 = (float)Math.Sin((double)rollOver2);
+        float cosRollOver2 = (float)Math.Cos((double)rollOver2);
+        float pitchOver2 = pitch * 0.5f;
+        float sinPitchOver2 = (float)Math.Sin((double)pitchOver2);
+        float cosPitchOver2 = (float)Math.Cos((double)pitchOver2);
+        float yawOver2 = yaw * 0.5f;
+        float sinYawOver2 = (float)Math.Sin((double)yawOver2);
+        float cosYawOver2 = (float)Math.Cos((double)yawOver2);
+        Quaternion result;
+        result.w = cosYawOver2 * cosPitchOver2 * cosRollOver2 + sinYawOver2 * sinPitchOver2 * sinRollOver2;
+        result.x = cosYawOver2 * sinPitchOver2 * cosRollOver2 + sinYawOver2 * cosPitchOver2 * sinRollOver2;
+        result.y = sinYawOver2 * cosPitchOver2 * cosRollOver2 - cosYawOver2 * sinPitchOver2 * sinRollOver2;
+        result.z = cosYawOver2 * cosPitchOver2 * sinRollOver2 - sinYawOver2 * sinPitchOver2 * cosRollOver2;
+
+        return result;
+    }
 }
