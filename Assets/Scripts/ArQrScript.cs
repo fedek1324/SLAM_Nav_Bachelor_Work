@@ -92,9 +92,9 @@ public class ArQrScript : MonoBehaviour
         return Quaternion.AngleAxis(angle, Vector3.up) * CreateVectorCopy(vector); // Vector.up represents Y axis
     }
 
-    public void SetQrCodeRecenterTarget(string targetText, Vector3 vector1, Vector3 vector2)
+    public void SetQrCodeRecenterTarget(string targetText, Vector3 imagePos, Vector3 currPos, Quaternion yImageRot)
     {
-        Vector3 offset = CreateVectorCopy(vector2 - vector1);
+        Vector3 offset = CreateVectorCopy(currPos - imagePos);
         textField.text = $"Offset before {offset}";
         GameObject qrCodePoint = GameObject.Find(targetText);
         if (qrCodePoint != null)
@@ -105,7 +105,7 @@ public class ArQrScript : MonoBehaviour
             Vector3 qrCodePointPos = CreateVectorCopy(qrCodePoint.transform.position);
             Quaternion qrCodePointRot = CreateQuaternionCopy(qrCodePoint.transform.rotation);
             textField2.text = $"{qrCodePointRot.eulerAngles.y}";
-            Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y));
+            Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y - yImageRot.eulerAngles.y));
 
             sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
@@ -163,7 +163,7 @@ public class ArQrScript : MonoBehaviour
                 + $"Image: {trackedImage.referenceImage.name} is at " + $"{imagePos}.\n" +
                   $"Indicator pos: {currentPos}\n" +
                   $"Difference vector: {differenceVec}\nDistance: {Vector3.Distance(currentPos, imagePos)}\n" +
-                  $"Size {trackedImage.gameObject}";
+                  $"Y rotation {trackedImage.transform.rotation.eulerAngles.y}";
 
             if (firstText == "")
             {
@@ -172,7 +172,7 @@ public class ArQrScript : MonoBehaviour
             if (plannedRecenter)
             {
                 plannedRecenter = false;
-                SetQrCodeRecenterTarget(trackedImage.referenceImage.name, CreateVectorCopy(imagePos), CreateVectorCopy(currentPos));
+                SetQrCodeRecenterTarget(trackedImage.referenceImage.name, CreateVectorCopy(imagePos), CreateVectorCopy(currentPos), CreateQuaternionCopy(trackedImage.transform.rotation));
             }
             textField.text = firstText + "\n\n" + msg;
             //OnDisable();
