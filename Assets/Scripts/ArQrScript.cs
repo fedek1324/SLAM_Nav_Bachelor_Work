@@ -42,8 +42,15 @@ public class ArQrScript : MonoBehaviour
     private GameObject lineRenderer3;
 
     public bool plannedRecenter = false;
+    public bool doSessionReset = true;
+
+    private Vector3 totalOffset = new Vector3(0, 0, 0);
+    private Quaternion totalQuaternion = new Quaternion();
 
     public void PlanRecenter() { plannedRecenter = true; textField.text += $"\nPlanned recenter"; }
+
+    public void EnableSessionReset() { doSessionReset = true; textField.text += $"\nEnabled Session reset"; }
+    public void DisableSessionReset() { doSessionReset = false; textField.text += $"\nDisabled Session reset"; }
 
     // There were OnEnable and OnDisable were changing .trackedImagesChanged, i think that onEnable happens
     // on start on when we activate this game object amd onDisable wjen we disable this game obj
@@ -63,7 +70,7 @@ public class ArQrScript : MonoBehaviour
 
     private void Start()
     {
-        textField.text = $"Qr script started! Creating manager";
+        textField.text += $"\nQr script started! Creating manager";
         lineRenderer.enabled = false;
         LineRenderer lr1 = lineRenderer1.GetComponent<LineRenderer>();
         lr1.enabled = false;
@@ -84,7 +91,7 @@ public class ArQrScript : MonoBehaviour
         m_TrackedImageManager.maxNumberOfMovingImages = 1;
         m_TrackedImageManager.trackedImagePrefab = scannedImagePrefab;
         m_TrackedImageManager.trackedImagesChanged += OnChanged;
-        textField.text = $"Loaded tracking manager";
+        textField.text += $"\nLoaded tracking manager";
     }
 
     private Vector3 RotateVectorAroundY(Vector3 vector, float angle)
@@ -100,7 +107,10 @@ public class ArQrScript : MonoBehaviour
         if (qrCodePoint != null)
         {
             // Reset position and rotation of ARSession
-            session.Reset();
+            if (doSessionReset)
+            {
+                session.Reset();
+            }
 
             Vector3 qrCodePointPos = CreateVectorCopy(qrCodePoint.transform.position);
             Quaternion qrCodePointRot = CreateQuaternionCopy(qrCodePoint.transform.rotation);
@@ -109,6 +119,8 @@ public class ArQrScript : MonoBehaviour
 
             sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+
+            totalOffset = totalOffset + CreateVectorCopy(sessionOrigin.transform.position - currPos);
 
             textField.text += $"Offset after {offset}";
 
@@ -139,6 +151,7 @@ public class ArQrScript : MonoBehaviour
         foreach (var trackedImage in m_TrackedImageManager.trackables)
         {
             trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, trackedImage.referenceImage.size.y);
+            //trackedImage.transform.position += totalOffset;
         }
 
         //foreach (var newImage in eventArgs.added)
@@ -153,7 +166,7 @@ public class ArQrScript : MonoBehaviour
         {
             // Handle updated event
             Vector3 imagePos = CreateVectorCopy(trackedImage.transform.position);
-            Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position);
+            Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position) - totalOffset;
             Vector3 differenceVec = CreateVectorCopy(currentPos - imagePos);
 
             //VisualizePointsDifference(imagePos, currentPos); deleted bcs it overlays another func call after scan
