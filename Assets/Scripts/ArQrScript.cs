@@ -206,7 +206,7 @@ public class ArQrScript : MonoBehaviour
                   $"Difference vector: {differenceVec}\nDistance: {Vector3.Distance(currentPos, imagePos)}\n" +
                   $"Y rotation {trackedImage.transform.rotation.eulerAngles.y}";
 
-            if (firstText == "")
+            if (firstText == "" && currentPos != new Vector3(0,0,0) && imagePos != new Vector3(0, 0, 0))
             {
                 firstText = msg;
             }
