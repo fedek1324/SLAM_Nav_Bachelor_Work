@@ -11,14 +11,8 @@ using UnityEngine.XR.ARSubsystems;
 
 public class ArQrScript : MonoBehaviour
 {
-    //[SerializeField]
-    //ARTrackedImageManager m_TrackedImageManager;
     [SerializeField]
-    XRReferenceImageLibrary imageLibrary;
-    [SerializeField]
-    GameObject scannedImagePrefab;
-
-    private ARTrackedImageManager m_TrackedImageManager;
+    ARTrackedImageManager m_TrackedImageManager;
 
     [SerializeField]
     Text textField;
@@ -81,20 +75,22 @@ public class ArQrScript : MonoBehaviour
         LineRenderer lr3 = lineRenderer3.GetComponent<LineRenderer>();
         lr3.enabled = false;
 
-        InitTrackedImageManager();
-    }
-
-    public void InitTrackedImageManager()
-    {
-        m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
-        m_TrackedImageManager.referenceLibrary = imageLibrary;
-        m_TrackedImageManager.enabled = true;
-        m_TrackedImageManager.requestedMaxNumberOfMovingImages = 1;
-        m_TrackedImageManager.maxNumberOfMovingImages = 1;
-        m_TrackedImageManager.trackedImagePrefab = scannedImagePrefab;
         m_TrackedImageManager.trackedImagesChanged += OnChanged;
         textField.text += $"\nLoaded tracking manager";
+        //InitTrackedImageManager();
     }
+
+    //public void InitTrackedImageManager()
+    //{
+    //    m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
+    //    m_TrackedImageManager.referenceLibrary = imageLibrary;
+    //    m_TrackedImageManager.enabled = true;
+    //    m_TrackedImageManager.requestedMaxNumberOfMovingImages = 1;
+    //    m_TrackedImageManager.maxNumberOfMovingImages = 1;
+    //    m_TrackedImageManager.trackedImagePrefab = scannedImagePrefab;
+    //    m_TrackedImageManager.trackedImagesChanged += OnChanged;
+    //    textField.text += $"\nLoaded tracking manager";
+    //}
 
     private Vector3 RotateVectorAroundY(Vector3 vector, float angle)
     {
@@ -116,7 +112,8 @@ public class ArQrScript : MonoBehaviour
 
             Vector3 qrCodePointPos = CreateVectorCopy(qrCodePoint.transform.position);
             Quaternion qrCodePointRot = CreateQuaternionCopy(qrCodePoint.transform.rotation);
-            textField2.text = $"{qrCodePointRot.eulerAngles.y}";
+            textField2.text = $"\n{qrCodePointRot.eulerAngles.y}";
+            textField2.text += $"\nMoving";
             Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y));
 
             //// calculates bad if a spawn with angle
@@ -130,25 +127,36 @@ public class ArQrScript : MonoBehaviour
             sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
 
+            textField2.text += $"\nMoving1";
+
             // session, EventSystem, QrScannerNew, New Game Object
             session.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             session.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+
+            textField2.text += $"\nMoving2";
 
             GameObject eventSystem = GameObject.Find("EventSystem");
             eventSystem.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             eventSystem.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
 
+            textField2.text += $"\nMoving3";
+
             GameObject qrScannerNew = GameObject.Find("QrScannerNew");
             qrScannerNew.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             qrScannerNew.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
 
-            GameObject newGO = GameObject.Find("New Game Object");
-            newGO.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
-            newGO.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+            textField2.text += $"\nMoving4";
+
+            //We need it (maybe) when we create AR Tracked Image Manager in runt 
+            //GameObject newGO = GameObject.Find("New Game Object");
+            //newGO.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+            //newGO.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+
+            //textField2.text += $"\nMoving5";
 
 
             totalOffset = totalOffset + CreateVectorCopy(sessionOrigin.transform.position - currPos);
-
+            textField2.text += $"\nCalling Visualize";
             VisualizePointsDifference(CreateVectorCopy(sessionOrigin.transform.position), CreateVectorCopy(qrCodePointPos));
 
 
@@ -229,6 +237,7 @@ public class ArQrScript : MonoBehaviour
 
     private void VisualizePointsDifference(Vector3 vector1, Vector3 vector2)
     {
+        textField2.text += "Visualizing position offset";
         lineRenderer.enabled = true;
         lineRenderer.SetPosition(0, vector1);
         lineRenderer.SetPosition(1, vector2);
@@ -267,7 +276,7 @@ public class ArQrScript : MonoBehaviour
         return new Quaternion(initialQuaternion.x, initialQuaternion.y, initialQuaternion.z, initialQuaternion.w);
     }
 
-    private Quaternion ToQ(float yaw, float pitch, float roll)
+    private Quaternion ToQ(float yaw, float pitch, float roll) // YXZ
     {
         yaw *= Mathf.Deg2Rad;
         pitch *= Mathf.Deg2Rad;
