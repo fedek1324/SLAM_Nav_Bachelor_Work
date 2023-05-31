@@ -77,6 +77,7 @@ public class ArQrScript : MonoBehaviour
 
         m_TrackedImageManager.trackedImagesChanged += OnChanged;
         textField.text += $"\nLoaded tracking manager";
+        DisableScanner();
         //InitTrackedImageManager();
     }
 
