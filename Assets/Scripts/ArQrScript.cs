@@ -49,6 +49,7 @@ public class ArQrScript : MonoBehaviour
 
     private Vector3 totalOffset = new Vector3(0, 0, 0);
     private Quaternion totalQuaternion = new Quaternion();
+    private Quaternion lastTeleportRotation = new Quaternion();
 
     public void PlanRecenter() { plannedRecenter = true; textField.text += $"\nPlanned recenter"; }
 
@@ -93,7 +94,7 @@ public class ArQrScript : MonoBehaviour
         m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
         m_TrackedImageManager.transform.parent = transform;
         m_TrackedImageManager.transform.position = sessionOrigin.transform.position;
-        m_TrackedImageManager.transform.rotation = sessionOrigin.transform.rotation;
+        m_TrackedImageManager.transform.rotation = lastTeleportRotation;
         m_TrackedImageManager.referenceLibrary = imageLibrary;
         m_TrackedImageManager.enabled = true;
         m_TrackedImageManager.requestedMaxNumberOfMovingImages = 1;
@@ -147,6 +148,7 @@ public class ArQrScript : MonoBehaviour
 
             sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+            lastTeleportRotation = CreateQuaternionCopy(qrCodePointRot);
 
             textField2.text += $"\nMoving1";
 
