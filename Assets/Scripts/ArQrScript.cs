@@ -11,8 +11,15 @@ using UnityEngine.XR.ARSubsystems;
 
 public class ArQrScript : MonoBehaviour
 {
+    //[SerializeField]
+    //ARTrackedImageManager m_TrackedImageManager;
+
     [SerializeField]
-    ARTrackedImageManager m_TrackedImageManager;
+    XRReferenceImageLibrary imageLibrary;
+    [SerializeField]
+    GameObject scannedImagePrefab;
+
+    private ARTrackedImageManager m_TrackedImageManager;
 
     [SerializeField]
     Text textField;
@@ -75,23 +82,36 @@ public class ArQrScript : MonoBehaviour
         LineRenderer lr3 = lineRenderer3.GetComponent<LineRenderer>();
         lr3.enabled = false;
 
-        m_TrackedImageManager.trackedImagesChanged += OnChanged;
-        textField.text += $"\nLoaded tracking manager";
-        DisableScanner();
+        //m_TrackedImageManager.trackedImagesChanged += OnChanged;
+        //textField.text += $"\nLoaded tracking manager";
+        //DisableScanner();
         //InitTrackedImageManager();
     }
 
-    //public void InitTrackedImageManager()
-    //{
-    //    m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
-    //    m_TrackedImageManager.referenceLibrary = imageLibrary;
-    //    m_TrackedImageManager.enabled = true;
-    //    m_TrackedImageManager.requestedMaxNumberOfMovingImages = 1;
-    //    m_TrackedImageManager.maxNumberOfMovingImages = 1;
-    //    m_TrackedImageManager.trackedImagePrefab = scannedImagePrefab;
-    //    m_TrackedImageManager.trackedImagesChanged += OnChanged;
-    //    textField.text += $"\nLoaded tracking manager";
-    //}
+    public void InitTrackedImageManager()
+    {
+        m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
+        m_TrackedImageManager.transform.parent = transform;
+        m_TrackedImageManager.transform.position = sessionOrigin.transform.position;
+        m_TrackedImageManager.transform.rotation = sessionOrigin.transform.rotation;
+        m_TrackedImageManager.referenceLibrary = imageLibrary;
+        m_TrackedImageManager.enabled = true;
+        m_TrackedImageManager.requestedMaxNumberOfMovingImages = 1;
+        m_TrackedImageManager.maxNumberOfMovingImages = 1;
+        m_TrackedImageManager.trackedImagePrefab = scannedImagePrefab;
+        m_TrackedImageManager.trackedImagesChanged += OnChanged;
+        textField.text += $"\nLoaded tracking manager";
+    }
+
+    public void DisableScanner()
+    {
+        m_TrackedImageManager.trackedImagePrefab = scannedImagePrefab;
+        m_TrackedImageManager.trackedImagesChanged -= OnChanged;
+        m_TrackedImageManager.enabled = false;
+        m_TrackedImageManager.StopAllCoroutines();
+        m_TrackedImageManager = null;
+        textField.text += $"\nDisabled tracking manager";
+    }
 
     private Vector3 RotateVectorAroundY(Vector3 vector, float angle)
     {
@@ -148,7 +168,7 @@ public class ArQrScript : MonoBehaviour
 
             textField2.text += $"\nMoving4";
 
-            //We need it (maybe) when we create AR Tracked Image Manager in runt 
+            //We need it (maybe) when we create AR Tracked Image Manager in runtime 
             //GameObject newGO = GameObject.Find("New Game Object");
             //newGO.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             //newGO.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
@@ -174,14 +194,9 @@ public class ArQrScript : MonoBehaviour
         }
     }
 
-    private void DisableScanner()
-    {
-        m_TrackedImageManager.trackedImagesChanged -= OnChanged;
-        m_TrackedImageManager.enabled = false;
-    }
-
     void OnChanged(ARTrackedImagesChangedEventArgs eventArgs)
     {
+        textField2.text += $"\nOnChanged";
         foreach (var trackedImage1 in m_TrackedImageManager.trackables)
         {
             trackedImage1.transform.localScale = new Vector3(trackedImage1.referenceImage.size.x, 0.005f, trackedImage1.referenceImage.size.y);
