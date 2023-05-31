@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -129,6 +130,23 @@ public class ArQrScript : MonoBehaviour
             sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
             sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
 
+            // session, EventSystem, QrScannerNew, New Game Object
+            session.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+            session.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+
+            GameObject eventSystem = GameObject.Find("EventSystem");
+            eventSystem.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+            eventSystem.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+
+            GameObject qrScannerNew = GameObject.Find("QrScannerNew");
+            qrScannerNew.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+            qrScannerNew.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+
+            GameObject newGO = GameObject.Find("New Game Object");
+            newGO.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+            newGO.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+
+
             totalOffset = totalOffset + CreateVectorCopy(sessionOrigin.transform.position - currPos);
 
             VisualizePointsDifference(CreateVectorCopy(sessionOrigin.transform.position), CreateVectorCopy(qrCodePointPos));
@@ -155,10 +173,10 @@ public class ArQrScript : MonoBehaviour
 
     void OnChanged(ARTrackedImagesChangedEventArgs eventArgs)
     {
-        foreach (var trackedImage in m_TrackedImageManager.trackables)
+        foreach (var trackedImage1 in m_TrackedImageManager.trackables)
         {
-            trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, trackedImage.referenceImage.size.y);
-            trackedImage.transform.position += totalOffset;
+            trackedImage1.transform.localScale = new Vector3(trackedImage1.referenceImage.size.x, 0.005f, trackedImage1.referenceImage.size.y);
+            //trackedImage.transform.position += totalOffset;
         }
 
         //foreach (var newImage in eventArgs.added)
@@ -169,8 +187,10 @@ public class ArQrScript : MonoBehaviour
         //          $"{newImage.transform.position}");
         //}
 
-        foreach (ARTrackedImage trackedImage in eventArgs.updated)
-        {
+
+        //foreach (ARTrackedImage trackedImage in eventArgs.updated)
+        //{
+        ARTrackedImage trackedImage = eventArgs.updated.Last();
             // Handle updated event
             Vector3 imagePos = CreateVectorCopy(trackedImage.transform.position);
             //Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position) - totalOffset;
@@ -181,7 +201,7 @@ public class ArQrScript : MonoBehaviour
 
 
             string msg = $"There are {m_TrackedImageManager.trackables.count} images being tracked.\n"
-                + $"Image: {trackedImage.referenceImage.name} is at " + $"{imagePos}.\n" +
+                + $"Image: {trackedImage.referenceImage.name}\n is at " + $"{imagePos}.\n" +
                   $"Indicator pos: {currentPos}\n" +
                   $"Difference vector: {differenceVec}\nDistance: {Vector3.Distance(currentPos, imagePos)}\n" +
                   $"Y rotation {trackedImage.transform.rotation.eulerAngles.y}";
@@ -198,7 +218,7 @@ public class ArQrScript : MonoBehaviour
             textField.text = firstText + "\n\n" + msg;
             //OnDisable();
 
-        }
+        //}
 
         //foreach (var removedImage in eventArgs.removed)
         //{
