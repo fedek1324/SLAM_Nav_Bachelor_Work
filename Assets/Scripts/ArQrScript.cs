@@ -104,7 +104,6 @@ public class ArQrScript : MonoBehaviour
     {
         // Maybe get currPos from sessionOrigin
         Vector3 offset = CreateVectorCopy(currPos - imagePos);
-        textField.text = $"Offset before {offset}";
         GameObject qrCodePoint = GameObject.Find(targetText);
         if (qrCodePoint != null)
         {
@@ -119,10 +118,10 @@ public class ArQrScript : MonoBehaviour
             textField2.text = $"{qrCodePointRot.eulerAngles.y}";
             Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y));
 
-            // calculates bad if a spawn with angle
-            Vector3 rotation = CreateVectorCopy(sessionOrigin.transform.rotation.eulerAngles);
-            rotation.y += qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y;
-            Quaternion newRot = ToQ(rotation.y, rotation.x, rotation.z);
+            //// calculates bad if a spawn with angle
+            //Vector3 rotation = CreateVectorCopy(sessionOrigin.transform.rotation.eulerAngles);
+            //rotation.y += qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y;
+            //Quaternion newRot = ToQ(rotation.y, rotation.x, rotation.z);
             
             // Quaternion copy = ToQ(qrCodePointRot.eulerAngles.y, qrCodePointRot.eulerAngles.x, qrCodePointRot.eulerAngles.z); // YXZ
             // textField2.text += $"\n qrCodeQuaternion: {qrCodePointRot}\nCopy: {copy}";
@@ -131,8 +130,6 @@ public class ArQrScript : MonoBehaviour
             sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
 
             totalOffset = totalOffset + CreateVectorCopy(sessionOrigin.transform.position - currPos);
-
-            textField.text += $"Offset after {offset}";
 
             VisualizePointsDifference(CreateVectorCopy(sessionOrigin.transform.position), CreateVectorCopy(qrCodePointPos));
 
@@ -176,7 +173,8 @@ public class ArQrScript : MonoBehaviour
         {
             // Handle updated event
             Vector3 imagePos = CreateVectorCopy(trackedImage.transform.position);
-            Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position) - totalOffset;
+            //Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position) - totalOffset;
+            Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position);
             Vector3 differenceVec = CreateVectorCopy(currentPos - imagePos);
 
             //VisualizePointsDifference(imagePos, currentPos); deleted bcs it overlays another func call after scan
