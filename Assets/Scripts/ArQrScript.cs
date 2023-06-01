@@ -91,6 +91,7 @@ public class ArQrScript : MonoBehaviour
 
     public void InitTrackedImageManager()
     {
+        // maybe save GO link and delete Obj ob Disable Scanner
         m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
         m_TrackedImageManager.transform.parent = transform;
         m_TrackedImageManager.transform.position = sessionOrigin.transform.position;
