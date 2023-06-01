@@ -47,6 +47,11 @@ public class ArQrScript : MonoBehaviour
     private Quaternion totalQuaternion = new Quaternion();
     private Quaternion lastTeleportRotation = new Quaternion();
 
+    public bool useAngle = false;
+
+    public void EnableAngleUse() { useAngle = true; textField.text += $"\nEnabled AngleUse"; }
+    public void DisableAngleUse() { useAngle = false; textField.text += $"\nDisabled AngleUse"; }
+
     GameObject managerContainer;
 
     public void PlanRecenter() { plannedRecenter = true; textField.text += $"\nPlanned recenter"; }
@@ -124,6 +129,7 @@ public class ArQrScript : MonoBehaviour
     {
         // Maybe get currPos from sessionOrigin
         Vector3 offset = CreateVectorCopy(currPos - imagePos);
+
         GameObject qrCodePoint = GameObject.Find(targetText);
         if (qrCodePoint != null)
         {
@@ -143,11 +149,25 @@ public class ArQrScript : MonoBehaviour
             //Vector3 rotation = CreateVectorCopy(sessionOrigin.transform.rotation.eulerAngles);
             //rotation.y += qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y;
             //Quaternion newRot = ToQ(rotation.y, rotation.x, rotation.z);
-            
+
             // Quaternion copy = ToQ(qrCodePointRot.eulerAngles.y, qrCodePointRot.eulerAngles.x, qrCodePointRot.eulerAngles.z); // YXZ
             // textField2.text += $"\n qrCodeQuaternion: {qrCodePointRot}\nCopy: {copy}";
 
-            sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+
+            float distance = Vector3.Distance(currPos, imagePos);
+            Vector3 distVector = new Vector3(0, 0, -distance);
+            Vector3 offset2 = CreateVectorCopy(RotateVectorAroundY(distVector, qrCodePointRot.eulerAngles.y));
+
+
+            //sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+            if (useAngle)
+            {
+                sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+            } 
+            else
+            {
+                sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offset2);
+            }
             sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
             lastTeleportRotation = CreateQuaternionCopy(qrCodePointRot);
 
@@ -211,7 +231,9 @@ public class ArQrScript : MonoBehaviour
         //foreach (ARTrackedImage trackedImage in eventArgs.updated)
         //{
         ARTrackedImage trackedImage = eventArgs.updated.Last();
-        trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, trackedImage.referenceImage.size.y);
+
+        //trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, trackedImage.referenceImage.size.y);
+
         // Handle updated event
         Vector3 imagePos = CreateVectorCopy(trackedImage.transform.position);
             //Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position) - totalOffset;
@@ -282,11 +304,13 @@ public class ArQrScript : MonoBehaviour
 
     private Vector3 CreateVectorCopy(Vector3 initialVector)
     {
+        return initialVector;
         return new Vector3(initialVector.x, initialVector.y, initialVector.z);
     }
 
     private Quaternion CreateQuaternionCopy(Quaternion initialQuaternion)
     {
+        return initialQuaternion;
         return new Quaternion(initialQuaternion.x, initialQuaternion.y, initialQuaternion.z, initialQuaternion.w);
     }
 
