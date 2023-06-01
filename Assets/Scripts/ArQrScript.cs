@@ -1,11 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
@@ -51,6 +47,8 @@ public class ArQrScript : MonoBehaviour
     private Quaternion totalQuaternion = new Quaternion();
     private Quaternion lastTeleportRotation = new Quaternion();
 
+    GameObject managerContainer;
+
     public void PlanRecenter() { plannedRecenter = true; textField.text += $"\nPlanned recenter"; }
 
     public void EnableSessionReset() { doSessionReset = true; textField.text += $"\nEnabled Session reset"; }
@@ -92,7 +90,8 @@ public class ArQrScript : MonoBehaviour
     public void InitTrackedImageManager()
     {
         // maybe save GO link and delete Obj ob Disable Scanner
-        m_TrackedImageManager = new GameObject().AddComponent<ARTrackedImageManager>();
+        managerContainer = new GameObject();
+        m_TrackedImageManager = managerContainer.AddComponent<ARTrackedImageManager>();
         m_TrackedImageManager.transform.parent = transform;
         m_TrackedImageManager.transform.position = sessionOrigin.transform.position;
         m_TrackedImageManager.transform.rotation = lastTeleportRotation;
@@ -112,6 +111,7 @@ public class ArQrScript : MonoBehaviour
         m_TrackedImageManager.enabled = false;
         m_TrackedImageManager.StopAllCoroutines();
         m_TrackedImageManager = null;
+        managerContainer = null;
         textField.text += $"\nDisabled tracking manager";
     }
 
@@ -199,13 +199,6 @@ public class ArQrScript : MonoBehaviour
 
     void OnChanged(ARTrackedImagesChangedEventArgs eventArgs)
     {
-        textField2.text += $"\nOnChanged";
-        foreach (var trackedImage1 in m_TrackedImageManager.trackables)
-        {
-            trackedImage1.transform.localScale = new Vector3(trackedImage1.referenceImage.size.x, 0.005f, trackedImage1.referenceImage.size.y);
-            //trackedImage.transform.position += totalOffset;
-        }
-
         //foreach (var newImage in eventArgs.added)
         //{
         //    BAD POSITIONING HERE
@@ -218,8 +211,9 @@ public class ArQrScript : MonoBehaviour
         //foreach (ARTrackedImage trackedImage in eventArgs.updated)
         //{
         ARTrackedImage trackedImage = eventArgs.updated.Last();
-            // Handle updated event
-            Vector3 imagePos = CreateVectorCopy(trackedImage.transform.position);
+        trackedImage.transform.localScale = new Vector3(trackedImage.referenceImage.size.x, 0.005f, trackedImage.referenceImage.size.y);
+        // Handle updated event
+        Vector3 imagePos = CreateVectorCopy(trackedImage.transform.position);
             //Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position) - totalOffset;
             Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position);
             Vector3 differenceVec = CreateVectorCopy(currentPos - imagePos);
@@ -231,10 +225,11 @@ public class ArQrScript : MonoBehaviour
                 + $"Image: {trackedImage.referenceImage.name}\n is at " + $"{imagePos}.\n" +
                   $"Indicator pos: {currentPos}\n" +
                   $"Difference vector: {differenceVec}\nDistance: {Vector3.Distance(currentPos, imagePos)}\n" +
-                  $"Y rotation {trackedImage.transform.rotation.eulerAngles.y}";
+                  $"Y rotation {trackedImage.transform.rotation.eulerAngles.y}\n" +
+                  $"Tracking state: {trackedImage.trackingState}";
 
-            if (firstText == "" && currentPos != new Vector3(0,0,0) && imagePos != new Vector3(0, 0, 0))
-            {
+            if (firstText == "") // && currentPos != new Vector3(0,0,0) && imagePos != new Vector3(0, 0, 0)
+        {
                 firstText = msg;
             }
             if (plannedRecenter)
@@ -316,5 +311,19 @@ public class ArQrScript : MonoBehaviour
         result.z = cosYawOver2 * cosPitchOver2 * sinRollOver2 - sinYawOver2 * sinPitchOver2 * cosRollOver2;
 
         return result;
+    }
+
+    public void QuitApp()
+    {
+        textField2.text += "\nBye";
+        try
+        {
+            DisableScanner();
+        }
+        catch (Exception e)
+        {
+
+        }
+        Application.Quit();
     }
 }
