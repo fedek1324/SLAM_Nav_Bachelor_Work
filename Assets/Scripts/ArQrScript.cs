@@ -134,7 +134,7 @@ public class ArQrScript : MonoBehaviour
 
             Vector3 qrCodePointPos = CreateVectorCopy(qrCodePoint.transform.position);
             Quaternion qrCodePointRot = CreateQuaternionCopy(qrCodePoint.transform.rotation);
-            textField2.text = $"\n{qrCodePointRot.eulerAngles.y}";
+            textField2.text = $"\n{qrCodePointRot.eulerAngles.y} - {imageRot.eulerAngles.y} = {qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y}";
             textField2.text += $"\nMoving";
             Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y));
 
