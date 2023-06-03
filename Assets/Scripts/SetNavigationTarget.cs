@@ -30,7 +30,6 @@ public class SetNavigationTarget : MonoBehaviour
 
     private bool lineToggle = false;
 
-
     // Start is called before the first frame update
     private void Start()
     {
@@ -70,13 +69,12 @@ public class SetNavigationTarget : MonoBehaviour
 
     public void SetCurrentNavigationTarget(string buttonText)
     {
-        targetPosition = Vector3.zero;
-        string selectedText = buttonText;
         if (currentTarget != null)
         {
             currentTarget.PositionObject.SetActive(false); // disable prev target visibility
         }
-        currentTarget = navigationTargetObjects.Find(x => x.Name.Equals(selectedText));
+        targetPosition = Vector3.zero;
+        currentTarget = navigationTargetObjects.Find(x => x.Name.Equals(buttonText));
         if (currentTarget != null)
         {
             currentTarget.PositionObject.SetActive(true);
