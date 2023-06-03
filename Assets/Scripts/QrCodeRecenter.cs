@@ -2,6 +2,7 @@
 using System.Linq;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using ZXing;
@@ -10,7 +11,6 @@ namespace Assets.Scripts
 {
     public class QrCodeRecenter : MonoBehaviour
     {
-
         [SerializeField]
         private ARSession session;
         [SerializeField]
@@ -20,9 +20,15 @@ namespace Assets.Scripts
         [SerializeField]
         private GameObject qrCodeScanningPanel;
 
+        GameObject area;
+        GameObject mainPanel;
+
         private Texture2D cameraImageTexture;
         private IBarcodeReader reader = new BarcodeReader(); // create a barcode reader instance
 		private bool scanningEnabled = false;
+
+        [SerializeField]
+        Text debugText;
 
         private Target findTarget(string targetText)
         {
@@ -34,29 +40,12 @@ namespace Assets.Scripts
             return target;
         }
 
-        private void Update()
+        private void Start()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                SetQrCodeRecenterTarget("3FloorStairs1QrWall");
-            }
-            if (Input.GetKeyDown(KeyCode.Z))
-            {
-                SetQrCodeRecenterTarget("AbsoluteZero");
-            }
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                SetQrCodeRecenterTarget("WindowCenter6449");
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha0))
-            {
-                SetQrCodeRecenterTarget("0FloorStairs1");
-            }
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                SetQrCodeRecenterTarget("MainEntrance2LeftColumnQrFloor");
-            }
+            area = GameObject.Find("NavigationArea");
+            mainPanel = GameObject.Find("MainPanel");
         }
+
         private void OnEnable()
         {
             cameraManager.frameReceived += OnCameraFrameReceived;
@@ -69,8 +58,7 @@ namespace Assets.Scripts
 
         private void OnCameraFrameReceived(ARCameraFrameEventArgs eventArgs)
         {
-			
-			if (!scanningEnabled) {
+            if (!scanningEnabled) {
 				return;
 			}
 			
@@ -149,8 +137,17 @@ namespace Assets.Scripts
         }
 		
 		public void ToggleScanning() {
-			scanningEnabled = !scanningEnabled;
+            debugText.text += "\ncalled ToggleScanning";
+            scanningEnabled = !scanningEnabled;
+
 			qrCodeScanningPanel.SetActive(scanningEnabled);
-		}
+            debugText.text += $"\nqrCodeScanningPanel.SetActive({scanningEnabled})";
+
+            area.SetActive(!scanningEnabled);
+            debugText.text += $"\narea.SetActive({!scanningEnabled})";
+
+            mainPanel.SetActive(!scanningEnabled);
+            debugText.text += $"\nmainPanel.SetActive({!scanningEnabled})";
+        }
     }
 }

@@ -14,7 +14,8 @@ public class SetNavigationTarget : MonoBehaviour
     [SerializeField]
     private Slider navigationYOffset;
 
-    private float yOffset = -1.5f;
+    private float positionYOffset = -1.5f;
+    private float yLineOffset = 1;
     private Target currentTarget;
 
     //[SerializeField]
@@ -28,6 +29,7 @@ public class SetNavigationTarget : MonoBehaviour
     private Vector3 targetPosition = Vector3.zero; // current target position
 
     private bool lineToggle = false;
+
 
     // Start is called before the first frame update
     private void Start()
@@ -52,29 +54,24 @@ public class SetNavigationTarget : MonoBehaviour
     private Vector3 SetPositionOffset(Vector3 position)
     {
         // to NavMesh choose right navMesh
-        return position + new Vector3(0, yOffset, 0);
+        return position + new Vector3(0, positionYOffset, 0);
     }
 
     private Vector3[] AddLineOffset()
     {
-        //if (navigationYOffset.value == 0)
-        //{
-        //    return path.corners;
-        //}
-
         Vector3[] calculatedLine = new Vector3[path.corners.Length];
         for (int i = 0; i < path.corners.Length; i++)
         {
-            float yOffset = navigationYOffset.value;
-            calculatedLine[i] = path.corners[i] + new Vector3(0, yOffset, 0);
+            //float yOffset = navigationYOffset.value;
+            calculatedLine[i] = path.corners[i] + new Vector3(0, yLineOffset, 0);
         }
         return calculatedLine;
     }
 
-    public void SetCurrentNavigationTarget(int selectedValue)
+    public void SetCurrentNavigationTarget(string buttonText)
     {
         targetPosition = Vector3.zero;
-        string selectedText = navigationTargetDropDown.options[selectedValue].text;
+        string selectedText = buttonText;
         if (currentTarget != null)
         {
             currentTarget.PositionObject.SetActive(false); // disable prev target visibility
