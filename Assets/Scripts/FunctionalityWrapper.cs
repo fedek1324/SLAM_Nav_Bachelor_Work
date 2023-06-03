@@ -19,8 +19,10 @@ public class FunctionalityWrapper : MonoBehaviour
     {
         GameObject newRecenter = GameObject.Find("NewRecenter");
         newRecenterScript = newRecenter.GetComponent<ArQrScript>();
+
         GameObject oldRecenter = GameObject.Find("QrCodeRecenter");
         oldRecenterScript = oldRecenter.GetComponent<QrCodeRecenter>();
+
         if (usingOldRecenter)
         {
             newRecenter.SetActive(false);
