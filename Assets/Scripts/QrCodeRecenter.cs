@@ -137,17 +137,10 @@ namespace Assets.Scripts
         }
 		
 		public void ToggleScanning() {
-            debugText.text += "\ncalled ToggleScanning";
             scanningEnabled = !scanningEnabled;
-
 			qrCodeScanningPanel.SetActive(scanningEnabled);
-            debugText.text += $"\nqrCodeScanningPanel.SetActive({scanningEnabled})";
-
             area.SetActive(!scanningEnabled);
-            debugText.text += $"\narea.SetActive({!scanningEnabled})";
-
             mainPanel.SetActive(!scanningEnabled);
-            debugText.text += $"\nmainPanel.SetActive({!scanningEnabled})";
         }
     }
 }
