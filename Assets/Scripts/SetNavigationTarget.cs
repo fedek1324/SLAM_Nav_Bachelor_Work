@@ -18,6 +18,9 @@ public class SetNavigationTarget : MonoBehaviour
     private float yLineOffset = 1;
     private Target currentTarget;
 
+    [SerializeField] 
+    private TMP_Text mainTitle;
+
     //[SerializeField]
     //private Camera topDownCamera;
 
@@ -84,6 +87,8 @@ public class SetNavigationTarget : MonoBehaviour
             }
 
             targetPosition = currentTarget.PositionObject.transform.position;
+
+            mainTitle.text = $"бшапюммне леярн:\n{currentTarget.Name}";
         }
     }
 

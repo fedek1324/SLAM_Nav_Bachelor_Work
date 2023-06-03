@@ -26,7 +26,7 @@ public class ArQrScript : MonoBehaviour
     [SerializeField]
     Text debugText;
 
-    public bool onScanner = false;
+    public bool scanningEnabled = false;
 
     public bool doSessionReset = true;
     public bool useAngle = false;
@@ -87,13 +87,13 @@ public class ArQrScript : MonoBehaviour
 
     private Vector3 RotateVectorAroundY(Vector3 vector, float angle)
     {
-        return Quaternion.AngleAxis(angle, Vector3.up) * CreateVectorCopy(vector); // Vector.up represents Y axis
+        return Quaternion.AngleAxis(angle, Vector3.up) * (vector); // Vector.up represents Y axis
     }
 
     public void SetQrCodeRecenterTarget(string targetText, Vector3 imagePos, Vector3 currPos, Quaternion imageRot)
     {
         // Maybe get currPos from sessionOrigin
-        Vector3 offset = CreateVectorCopy(currPos - imagePos);
+        Vector3 offset = (currPos - imagePos);
 
         GameObject qrCodePoint = GameObject.Find(targetText);
         if (qrCodePoint != null)
@@ -104,50 +104,52 @@ public class ArQrScript : MonoBehaviour
                 session.Reset();
             }
 
-            Vector3 qrCodePointPos = CreateVectorCopy(qrCodePoint.transform.position);
-            Quaternion qrCodePointRot = CreateQuaternionCopy(qrCodePoint.transform.rotation);
-            Vector3 offsetRelativeToNewQr = CreateVectorCopy(RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y));
+            Vector3 qrCodePointPos = (qrCodePoint.transform.position);
+            Quaternion qrCodePointRot = (qrCodePoint.transform.rotation);
+            Vector3 offsetRelativeToNewQr = (RotateVectorAroundY(offset, qrCodePointRot.eulerAngles.y - imageRot.eulerAngles.y));
 
             float distance = Vector3.Distance(currPos, imagePos);
             Vector3 distVector = new Vector3(0, 0, -distance);
-            Vector3 offset2 = CreateVectorCopy(RotateVectorAroundY(distVector, qrCodePointRot.eulerAngles.y));
+            Vector3 offset2 = (RotateVectorAroundY(distVector, qrCodePointRot.eulerAngles.y));
 
-            //sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+            //sessionOrigin.transform.position = (qrCodePointPos + offsetRelativeToNewQr);
             if (useAngle)
             {
-                sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
+                sessionOrigin.transform.position = (qrCodePointPos + offsetRelativeToNewQr);
             } 
             else
             {
-                sessionOrigin.transform.position = CreateVectorCopy(qrCodePointPos + offset2);
+                sessionOrigin.transform.position = (qrCodePointPos + offset2);
             }
-            sessionOrigin.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
-            lastTeleportRotation = CreateQuaternionCopy(qrCodePointRot);
+            sessionOrigin.transform.rotation = (qrCodePointRot); // to do add initial rotation
+            lastTeleportRotation = (qrCodePointRot);
 
             // session, EventSystem, QrScannerNew, New Game Object
-            session.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
-            session.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+            session.transform.position = (qrCodePointPos + offsetRelativeToNewQr);
+            session.transform.rotation = (qrCodePointRot); // to do add initial rotation
 
             GameObject eventSystem = GameObject.Find("EventSystem");
-            eventSystem.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
-            eventSystem.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+            eventSystem.transform.position = (qrCodePointPos + offsetRelativeToNewQr);
+            eventSystem.transform.rotation = (qrCodePointRot); // to do add initial rotation
 
             GameObject qrScannerNew = GameObject.Find("QrScannerNew");
-            qrScannerNew.transform.position = CreateVectorCopy(qrCodePointPos + offsetRelativeToNewQr);
-            qrScannerNew.transform.rotation = CreateQuaternionCopy(qrCodePointRot); // to do add initial rotation
+            qrScannerNew.transform.position = (qrCodePointPos + offsetRelativeToNewQr);
+            qrScannerNew.transform.rotation = (qrCodePointRot); // to do add initial rotation
         }
     }
 
     public void ToggleQrCodeScanning()
     {
-        onScanner = !onScanner;
-        qrCodeScanningPanel.SetActive(onScanner);
+        scanningEnabled = !scanningEnabled;
+        qrCodeScanningPanel.SetActive(scanningEnabled);
 
-        area.SetActive(!onScanner);
+        area.SetActive(!scanningEnabled);
 
-        mainPanel.SetActive(!onScanner);
+        mainPanel.SetActive(!scanningEnabled);
 
-        if (onScanner)
+        indicator.GetComponent<LineRenderer>().enabled = !scanningEnabled;
+
+        if (scanningEnabled)
         {
             InitTrackedImageManager();
         }
@@ -163,22 +165,10 @@ public class ArQrScript : MonoBehaviour
         if (trackedImage.trackingState == TrackingState.Tracking) {
             // Handle updated event
             ToggleQrCodeScanning();
-            Vector3 imagePos = CreateVectorCopy(trackedImage.transform.position);
-            Vector3 currentPos = CreateVectorCopy(indicator.gameObject.transform.position);
-            SetQrCodeRecenterTarget(trackedImage.referenceImage.name, CreateVectorCopy(imagePos), CreateVectorCopy(currentPos), CreateQuaternionCopy(trackedImage.transform.rotation));
+            Vector3 imagePos = (trackedImage.transform.position);
+            Vector3 currentPos = (indicator.gameObject.transform.position);
+            SetQrCodeRecenterTarget(trackedImage.referenceImage.name, (imagePos), (currentPos), (trackedImage.transform.rotation));
         }
-    }
-
-    private Vector3 CreateVectorCopy(Vector3 initialVector)
-    {
-        return initialVector;
-        return new Vector3(initialVector.x, initialVector.y, initialVector.z);
-    }
-
-    private Quaternion CreateQuaternionCopy(Quaternion initialQuaternion)
-    {
-        return initialQuaternion;
-        return new Quaternion(initialQuaternion.x, initialQuaternion.y, initialQuaternion.z, initialQuaternion.w);
     }
 
     //public void QuitApp()

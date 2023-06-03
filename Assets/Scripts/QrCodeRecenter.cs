@@ -22,6 +22,7 @@ namespace Assets.Scripts
 
         GameObject area;
         GameObject mainPanel;
+        GameObject indicator;
 
         private Texture2D cameraImageTexture;
         private IBarcodeReader reader = new BarcodeReader(); // create a barcode reader instance
@@ -44,6 +45,7 @@ namespace Assets.Scripts
         {
             area = GameObject.Find("NavigationArea");
             mainPanel = GameObject.Find("MainPanel");
+            indicator = GameObject.Find("Indicator");
         }
 
         private void OnEnable()
@@ -138,6 +140,8 @@ namespace Assets.Scripts
 		
 		public void ToggleScanning() {
             scanningEnabled = !scanningEnabled;
+
+            indicator.GetComponent<LineRenderer>().enabled = !scanningEnabled;
 			qrCodeScanningPanel.SetActive(scanningEnabled);
             area.SetActive(!scanningEnabled);
             mainPanel.SetActive(!scanningEnabled);
