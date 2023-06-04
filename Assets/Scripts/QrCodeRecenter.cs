@@ -31,14 +31,11 @@ namespace Assets.Scripts
         [SerializeField]
         Text debugText;
 
-        private Target findTarget(string targetText)
+        private GameObject findTarget(string targetText)
         {
             //Target currentTarget = navigationTargetObjects.Find(x => x.Name.ToLower().Equals(targetText.ToLower()));
             GameObject gameObject = GameObject.Find(targetText);
-            Target target = new Target();
-            target.PositionObject = gameObject;
-            target.Name = targetText;
-            return target;
+            return gameObject;
         }
 
         private void Start()
@@ -126,15 +123,15 @@ namespace Assets.Scripts
 
         public void SetQrCodeRecenterTarget(string targetText)
         {
-            Target currentTarget = findTarget(targetText);
+            GameObject currentTarget = findTarget(targetText);
             if (currentTarget != null)
             {
                 // Reset position and rotation of ARSession
                 session.Reset();
 
                 // Add offset for recentering
-                sessionOrigin.transform.position = currentTarget.PositionObject.transform.position;
-                sessionOrigin.transform.rotation = currentTarget.PositionObject.transform.rotation;
+                sessionOrigin.transform.position = currentTarget.transform.position;
+                sessionOrigin.transform.rotation = currentTarget.transform.rotation;
             }
         }
 		

@@ -10,13 +10,11 @@ public class SetNavigationTarget : MonoBehaviour
     [SerializeField]
     private TMP_Dropdown navigationTargetDropDown;
     [SerializeField]
-    private List<Target> navigationTargetObjects = new List<Target>();
-    [SerializeField]
     private Slider navigationYOffset;
 
     private float positionYOffset = -1.5f;
     private float yLineOffset = 1;
-    private Target currentTarget;
+    private GameObject currentTarget;
 
     [SerializeField] 
     private TMP_Text mainTitle;
@@ -39,6 +37,10 @@ public class SetNavigationTarget : MonoBehaviour
         path = new NavMeshPath();
         line = transform.GetComponent<LineRenderer>();
         line.enabled = lineToggle;
+
+        GameObject parentObject = GameObject.Find("NavigationTarget");
+        SetChildrenActiveRecursive(parentObject, false);
+
     }
 
     // Update is called once per frame
@@ -74,21 +76,27 @@ public class SetNavigationTarget : MonoBehaviour
     {
         if (currentTarget != null)
         {
-            currentTarget.PositionObject.SetActive(false); // disable prev target visibility
+            currentTarget.SetActive(false); // disable prev target visibility
         }
         targetPosition = Vector3.zero;
-        currentTarget = navigationTargetObjects.Find(x => x.Name.Equals(buttonText));
+
+        SetChildrenActiveRecursive(GameObject.Find("NavigationTarget"), true);
+        GameObject target = FindInChildrenRecursive(GameObject.Find("NavigationTarget"), buttonText);
+        SetChildrenActiveRecursive(GameObject.Find("NavigationTarget"), false);
+
+        currentTarget = target;
         if (currentTarget != null)
         {
-            currentTarget.PositionObject.SetActive(true);
+            SetParentsActiveRecursive(currentTarget, true);
+            currentTarget.SetActive(true);
             if (!line.enabled)
             {
                 ToggleVisibility();
             }
 
-            targetPosition = currentTarget.PositionObject.transform.position;
+            targetPosition = currentTarget.transform.position;
 
-            mainTitle.text = $"бшапюммне леярн:\n{currentTarget.Name}";
+            mainTitle.text = $"бшапюммне леярн:\n{currentTarget.name}";
         }
     }
 
@@ -96,5 +104,43 @@ public class SetNavigationTarget : MonoBehaviour
     {
         lineToggle = !lineToggle;
         line.enabled = lineToggle;
+    }
+
+    public static void SetChildrenActiveRecursive(GameObject parent, bool active)
+    {
+        int childCount = parent.transform.childCount;
+        for (int i = 0; i < childCount; i++)
+        {
+            GameObject child = parent.transform.GetChild(i).gameObject;
+            child.SetActive(active);
+            SetChildrenActiveRecursive(child, active);
+        }
+    }
+
+    public static GameObject FindInChildrenRecursive(GameObject parent, string name)
+    {
+        if (parent.name == name)
+            return parent;
+
+        int childCount = parent.transform.childCount;
+        for (int i = 0; i < childCount; i++)
+        {
+            GameObject child = parent.transform.GetChild(i).gameObject;
+            GameObject result = FindInChildrenRecursive(child, name);
+            if (result != null)
+                return result;
+        }
+        return null;
+    }
+
+    public static void SetParentsActiveRecursive(GameObject child, bool active)
+    {
+        Transform parent = child.transform.parent;
+        if (parent != null)
+        {
+            GameObject parentObject = parent.gameObject;
+            parentObject.SetActive(active);
+            SetParentsActiveRecursive(parentObject, active);
+        }
     }
 }
