@@ -13,7 +13,7 @@ public class SetNavigationTarget : MonoBehaviour
     private Slider navigationYOffset;
 
     private float positionYOffset = -1.5f;
-    private float yLineOffset = 1;
+    private float yLineOffset = 0.5f;
     private GameObject currentTarget;
 
     [SerializeField] 
@@ -30,6 +30,15 @@ public class SetNavigationTarget : MonoBehaviour
     private Vector3 targetPosition = Vector3.zero; // current target position
 
     private bool lineToggle = false;
+    //public float PercentHead = 0.4f;
+
+    //private GameObject lineRenderersGO;
+    //private List<LineRenderer> lineRenderers;
+
+    [SerializeField]
+    private GameObject arrowPrefab;
+    private List<GameObject> arrows;
+    int iter= 0;
 
     // Start is called before the first frame update
     private void Start()
@@ -41,25 +50,126 @@ public class SetNavigationTarget : MonoBehaviour
         GameObject parentObject = GameObject.Find("NavigationTarget");
         SetChildrenActiveRecursive(parentObject, false);
 
+        arrows = new List<GameObject>();
+
     }
 
     // Update is called once per frame
     private void Update()
     {
+        iter++;
+        if (iter % 100 != 0)
+        {
+            return;
+        }
+
         if (lineToggle && targetPosition != Vector3.zero)
         {
             NavMesh.CalculatePath(SetPositionOffset(transform.position), targetPosition, NavMesh.AllAreas, path);
-            line.positionCount = path.corners.Length;
             Vector3[] calculatedPathAndOffset = AddLineOffset();
-            line.SetPositions(calculatedPathAndOffset);
+
+            //line.positionCount = path.corners.Length;
+            //line.SetPositions(calculatedPathAndOffset);
+
+            DrawArrowLines(arrows, calculatedPathAndOffset);
+
+
+            //int lineRenderersNeed = 1;
+            //Material material = new Material(line.material);
+            //initLineRenderers(lineRenderersNeed, material, lineRenderersGO);
+            //DrawArrow(new Vector3(0, 0, 0), new Vector3(0, 0, 1), PercentHead, lineRenderers[0]);
         }
     }
+
+    public void DrawArrowLines(List<GameObject> arrows, Vector3[] calculatedPathAndOffset)
+    {
+        for (int i = 0; i < arrows.Count; i++)
+        {
+            Destroy(arrows[i]);
+        }
+        for (int i = 0; i < calculatedPathAndOffset.Length - 1; i++)
+        {
+            DrawArrowLine(calculatedPathAndOffset[i], calculatedPathAndOffset[i + 1], 0.5f, line);
+        }
+    }
+
+    public void DrawArrowLine(Vector3 startPoint, Vector3 endPoint, float arrowSpacing, LineRenderer lineRenderer)
+    {
+        // Calculate the direction and length of the line
+        Vector3 lineDirection = (endPoint - startPoint).normalized;
+        float lineLength = Vector3.Distance(startPoint, endPoint);
+
+        // Set the positions of the line
+        lineRenderer.positionCount = 2;
+        lineRenderer.SetPosition(0, startPoint);
+        lineRenderer.SetPosition(1, endPoint);
+
+        // Calculate the number of arrows based on the spacing
+        int numArrows = Mathf.FloorToInt(lineLength / arrowSpacing);
+
+        // Instantiate arrows along the line
+        for (int i = 1; i <= numArrows; i++)
+        {
+            Vector3 arrowPosition = startPoint + lineDirection * (arrowSpacing * i);
+            Quaternion arrowRotation = Quaternion.LookRotation(RotateVectorAroundY(lineDirection, -90));
+            GameObject arrow = Instantiate(arrowPrefab, arrowPosition, arrowRotation);
+            arrows.Add(arrow);
+        }
+    }
+
+    private Vector3 RotateVectorAroundY(Vector3 vector, float angle)
+    {
+        return Quaternion.AngleAxis(angle, Vector3.up) * (vector); // Vector.up represents Y axis
+    }
+
+    //private void initLineRenderers(int lineRenderersNeed, Material material, GameObject lineRenderersGO)
+    //{
+    //    Destroy(lineRenderersGO);
+    //    lineRenderersGO = new GameObject();
+    //    lineRenderers = new List<LineRenderer>(lineRenderersNeed);
+    //    for (int i = 0; i < lineRenderersNeed; i++)
+    //    {
+    //        LineRenderer lineRenderer = lineRenderersGO.AddComponent<LineRenderer>();
+    //        lineRenderer.material = material;
+    //    }
+    //}
+
+    //public void DrawArrow(Vector3 ArrowOrigin, Vector3 ArrowTarget, float percentHead, LineRenderer lineRenderer)
+    //{
+    //    lineRenderer.positionCount = 2;
+    //    lineRenderer.widthCurve = new AnimationCurve(
+    //     new Keyframe(0, 0.4f)
+    //     , new Keyframe(0.999f - PercentHead, 0.4f)  // neck of arrow
+    //     , new Keyframe(1 - PercentHead, 1f)  // max width of arrow head
+    //     , new Keyframe(1, 0f));  // tip of arrow
+
+    //    lineRenderer.SetPositions(new Vector3[] {
+    //          ArrowOrigin
+    //          , Vector3.Lerp(ArrowOrigin, ArrowTarget, 0.999f - PercentHead)
+    //          , Vector3.Lerp(ArrowOrigin, ArrowTarget, 1 - PercentHead)
+    //          , ArrowTarget });
+    //}
+    //public Vector3[] SplitVector(Vector3 vector, float pathLength = 1)
+    //{
+    //    int numSplits = (int)(vector.magnitude / pathLength);
+    //    Vector3 normalizedVector = vector.normalized;
+
+    //    Vector3[] splitVectors = new Vector3[numSplits];
+
+    //    for (int i = 0; i < numSplits; i++)
+    //    {
+    //        splitVectors[i] = normalizedVector * pathLength;
+    //    }
+
+    //    return splitVectors;
+    //}
 
     private Vector3 SetPositionOffset(Vector3 position)
     {
         // to NavMesh choose right navMesh
         return position + new Vector3(0, positionYOffset, 0);
     }
+
 
     private Vector3[] AddLineOffset()
     {

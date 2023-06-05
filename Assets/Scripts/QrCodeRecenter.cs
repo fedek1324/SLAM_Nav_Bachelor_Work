@@ -20,7 +20,7 @@ namespace Assets.Scripts
         [SerializeField]
         private GameObject qrCodeScanningPanel;
 
-        GameObject area;
+        //GameObject area;
         GameObject mainPanel;
         GameObject indicator;
 
@@ -40,7 +40,7 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            area = GameObject.Find("NavigationArea");
+            //area = GameObject.Find("NavigationArea");
             mainPanel = GameObject.Find("MainPanel");
             indicator = GameObject.Find("Indicator");
         }
