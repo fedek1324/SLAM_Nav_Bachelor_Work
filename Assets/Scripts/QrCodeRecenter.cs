@@ -140,7 +140,7 @@ namespace Assets.Scripts
 
             indicator.GetComponent<LineRenderer>().enabled = !scanningEnabled;
 			qrCodeScanningPanel.SetActive(scanningEnabled);
-            area.SetActive(!scanningEnabled);
+            //area.SetActive(!scanningEnabled);
             mainPanel.SetActive(!scanningEnabled);
         }
     }
