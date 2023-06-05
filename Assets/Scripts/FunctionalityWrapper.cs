@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class FunctionalityWrapper : MonoBehaviour
 {
-    private ArQrScript newRecenterScript;
+    //private ArQrScript newRecenterScript;
     private QrCodeRecenter oldRecenterScript;
 
     [SerializeField]
@@ -17,15 +17,15 @@ public class FunctionalityWrapper : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject newRecenter = GameObject.Find("NewRecenter");
-        newRecenterScript = newRecenter.GetComponent<ArQrScript>();
+        //GameObject newRecenter = GameObject.Find("NewRecenter");
+        //newRecenterScript = newRecenter.GetComponent<ArQrScript>();
 
         GameObject oldRecenter = GameObject.Find("QrCodeRecenter");
         oldRecenterScript = oldRecenter.GetComponent<QrCodeRecenter>();
 
         if (usingOldRecenter)
         {
-            newRecenter.SetActive(false);
+            //newRecenter.SetActive(false);
         } 
         else
         {
@@ -42,7 +42,7 @@ public class FunctionalityWrapper : MonoBehaviour
         }
         else
         {
-            newRecenterScript.ToggleQrCodeScanning();
+            //newRecenterScript.ToggleQrCodeScanning();
         }
     }
 
