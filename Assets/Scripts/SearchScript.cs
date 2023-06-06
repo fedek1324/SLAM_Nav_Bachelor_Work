@@ -8,7 +8,8 @@ public class SearchScript : MonoBehaviour
     public GameObject SearchBar;
     public int totalElements;
     // Start is called before the first frame update
-    void Start()
+
+    public void initList()
     {
         totalElements = ContentHolder.transform.childCount;
         Element = new GameObject[totalElements];
@@ -19,6 +20,7 @@ public class SearchScript : MonoBehaviour
     }
 
     public void Search() {
+
         string SearchText = SearchBar.GetComponent<TMP_InputField>().text;
         int searchTxtlength = SearchText.Length;
 

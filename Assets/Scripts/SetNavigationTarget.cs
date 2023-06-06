@@ -58,10 +58,6 @@ public class SetNavigationTarget : MonoBehaviour
     private void Update()
     {
         iter++;
-        if (iter % 100 != 0)
-        {
-            return;
-        }
 
         if (lineToggle && targetPosition != Vector3.zero)
         {
@@ -83,6 +79,10 @@ public class SetNavigationTarget : MonoBehaviour
 
     public void DrawArrowLines(List<GameObject> arrows, Vector3[] calculatedPathAndOffset)
     {
+        if (iter % 100 != 0)
+        {
+            return;
+        }
         for (int i = 0; i < arrows.Count; i++)
         {
             Destroy(arrows[i]);
@@ -199,6 +199,7 @@ public class SetNavigationTarget : MonoBehaviour
         {
             SetParentsActiveRecursive(currentTarget, true);
             currentTarget.SetActive(true);
+            SetChildrenActiveRecursive(currentTarget.gameObject, true); 
             if (!line.enabled)
             {
                 ToggleVisibility();
