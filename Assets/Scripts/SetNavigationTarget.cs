@@ -214,7 +214,6 @@ public class SetNavigationTarget : MonoBehaviour
     {
         lineToggle = !lineToggle;
         line.enabled = lineToggle;
-        //mainTitle.text = $"\ntoggle visibility - new = {lineToggle}";
     }
 
     public static void SetChildrenActiveRecursive(GameObject parent, bool active)
