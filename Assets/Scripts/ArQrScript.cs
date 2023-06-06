@@ -151,7 +151,7 @@ public class ArQrScript : MonoBehaviour
 
         mainPanel.SetActive(!scanningEnabled);
 
-        indicator.GetComponent<LineRenderer>().enabled = !scanningEnabled;
+        indicator.GetComponent<SetNavigationTarget>().ToggleVisibility();
 
         if (scanningEnabled)
         {
