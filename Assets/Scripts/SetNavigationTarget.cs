@@ -68,10 +68,10 @@ public class SetNavigationTarget : MonoBehaviour
             NavMesh.CalculatePath(SetPositionOffset(transform.position), targetPosition, NavMesh.AllAreas, path);
             Vector3[] calculatedPathAndOffset = AddLineOffset();
 
-            //line.positionCount = path.corners.Length;
-            //line.SetPositions(calculatedPathAndOffset);
+            line.positionCount = path.corners.Length;
+            line.SetPositions(calculatedPathAndOffset);
 
-            DrawArrowLines(arrows, calculatedPathAndOffset);
+            //DrawArrowLines(arrows, calculatedPathAndOffset);
 
 
             //int lineRenderersNeed = 1;
