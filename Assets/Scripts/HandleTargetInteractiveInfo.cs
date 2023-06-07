@@ -14,7 +14,7 @@ public class HandleTargetInteractiveInfo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        List<string[]> data = ReadCSVFile(Path.Combine(Application.dataPath, "4floorInteractiveData.csv"));
+        List<string[]> data = ReadCSVFile(Path.Combine(Application.dataPath, "InteractiveData.csv"));
         AddInteractiveTextRecursive(gameObject, data);
         SetChildrenActiveRecursive(gameObject, true);
     }
@@ -45,15 +45,24 @@ public class HandleTargetInteractiveInfo : MonoBehaviour
     {
         string[] row = FindRowByAuditoryNumber(data, target.name);
         if (row != null) {
-            return 
-                ifNotEmpty($"№ аудитории: {row[1]}", row[1]) +
-                ifNotEmpty($"Кол-во посадочных мест: " + row[2], row[2]) +
-                ifNotEmpty($"Площадь: {row[3]} м²", row[3]) +
-                ifNotEmpty($"Назначение: {row[4]}", row[4]) +
-                ifNotEmpty($"Фактическое использование: {row[5]}", row[5]) +
-                ifNotEmpty($"Кафедра: {row[6]}", row[6]) +
-                ifNotEmpty($"Институт: {row[7]}", row[7]);
-        }
+            try
+            {
+                return 
+                    ifNotEmpty($"№ аудитории: {row[1]}", row[1]) +
+                    ifNotEmpty($"Кол-во посадочных мест: " + row[2], row[2]) +
+                    ifNotEmpty($"Площадь: {row[3]} м²", row[3]) +
+                    ifNotEmpty($"Назначение: {row[4]}", row[4]) +
+                    ifNotEmpty($"Фактическое использование: {row[5]}", row[5]) +
+                    ifNotEmpty($"Кафедра: {row[6]}", row[6]) +
+                    ifNotEmpty($"Институт: {row[7]}", row[7]);
+            }
+            catch (System.IndexOutOfRangeException e)
+            {
+                Debug.Log("Error with" + row[1]);
+                throw new System.Exception("Wrong format. Delete \\n form .csv");
+            }
+
+            }
         return "Аудитория " + target.name;
     }
 
