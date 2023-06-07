@@ -40,6 +40,10 @@ public class SetNavigationTarget : MonoBehaviour
     private List<GameObject> arrows;
     int iter= 0;
 
+    [SerializeField]
+    private bool enableAllOtherTargets = false;
+
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -192,9 +196,12 @@ public class SetNavigationTarget : MonoBehaviour
 
         SetChildrenActiveRecursive(GameObject.Find("NavigationTarget"), true);
         GameObject target = FindInChildrenRecursive(GameObject.Find("NavigationTarget"), buttonText);
-        SetChildrenActiveRecursive(GameObject.Find("NavigationTarget"), false);
+        if (!enableAllOtherTargets)
+        {
+            SetChildrenActiveRecursive(GameObject.Find("NavigationTarget"), false);
+        }
 
-        currentTarget = target;
+    currentTarget = target;
         if (currentTarget != null)
         {
             SetParentsActiveRecursive(currentTarget, true);
