@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
+using System;
 
 public class HandleTargetInteractiveInfo : MonoBehaviour
 {
@@ -14,9 +15,57 @@ public class HandleTargetInteractiveInfo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        List<string[]> data = ReadCSVFile(Path.Combine(Application.dataPath, "InteractiveData.csv"));
-        AddInteractiveTextRecursive(gameObject, data);
-        SetChildrenActiveRecursive(gameObject, true);
+        TextAsset fileAsset = Resources.Load<TextAsset>("InteractiveData");
+        string fileContent = fileAsset.text; // doesnt get \n
+
+        // doesnt work in smartphone
+        //string filePath = Path.Combine(Application.streamingAssetsPath, "InteractiveData.csv");
+        //string fileContent1 = File.ReadAllText(filePath);
+        //debugText.text += "2\n" + fileContent1;
+        //debugText.text += "2TTT\n";
+
+
+        //List<string[]> data = ReadCSVFile(Path.Combine(Application.dataPath, "InteractiveData.csv"));
+        //debugText.text += "3TTTT\n" + data[0];
+
+        List<string[]> data;
+        try
+        {
+            data = ConvertTextToList(fileContent);
+            AddInteractiveTextRecursive(gameObject, data);
+            SetChildrenActiveRecursive(gameObject, true);
+        }
+        catch (Exception e)
+        {
+            debugText.text = e.Message;
+            throw e;
+        }
+
+    }
+
+    public List<string[]> ConvertTextToList(string textData)
+    {
+        List<string[]> resultList = new List<string[]>();
+
+        int elementsPerRow = 8;
+        string[] elements = textData.Split(';');
+
+        int totalElements = elements.Length;
+        int totalRows = totalElements / elementsPerRow;
+
+        for (int i = 0; i < totalRows; i++)
+        {
+            string[] row = new string[elementsPerRow];
+
+            for (int j = 0; j < elementsPerRow; j++)
+            {
+                row[j] = elements[i * elementsPerRow + j].Trim();
+            }
+
+            resultList.Add(row);
+        }
+
+        return resultList;
     }
 
     public void AddInteractiveTextRecursive(GameObject navGO, List<string[]> data)
