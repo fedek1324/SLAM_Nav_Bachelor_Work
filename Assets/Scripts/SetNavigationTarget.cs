@@ -40,7 +40,7 @@ public class SetNavigationTarget : MonoBehaviour
     private List<GameObject> arrows;
     int iter= 0;
 
-    [SerializeField]
+    // dont serialize it sets another value or mb put init to start
     private bool enableAllOtherTargets = false;
 
 
@@ -81,45 +81,45 @@ public class SetNavigationTarget : MonoBehaviour
         }
     }
 
-    public void DrawArrowLines(List<GameObject> arrows, Vector3[] calculatedPathAndOffset)
-    {
-        if (iter % 100 != 0)
-        {
-            return;
-        }
-        for (int i = 0; i < arrows.Count; i++)
-        {
-            Destroy(arrows[i]);
-        }
-        for (int i = 0; i < calculatedPathAndOffset.Length - 1; i++)
-        {
-            DrawArrowLine(calculatedPathAndOffset[i], calculatedPathAndOffset[i + 1], 0.5f, line);
-        }
-    }
+    //public void DrawArrowLines(List<GameObject> arrows, Vector3[] calculatedPathAndOffset)
+    //{
+    //    if (iter % 100 != 0)
+    //    {
+    //        return;
+    //    }
+    //    for (int i = 0; i < arrows.Count; i++)
+    //    {
+    //        Destroy(arrows[i]);
+    //    }
+    //    for (int i = 0; i < calculatedPathAndOffset.Length - 1; i++)
+    //    {
+    //        DrawArrowLine(calculatedPathAndOffset[i], calculatedPathAndOffset[i + 1], 0.5f, line);
+    //    }
+    //}
 
-    public void DrawArrowLine(Vector3 startPoint, Vector3 endPoint, float arrowSpacing, LineRenderer lineRenderer)
-    {
-        // Calculate the direction and length of the line
-        Vector3 lineDirection = (endPoint - startPoint).normalized;
-        float lineLength = Vector3.Distance(startPoint, endPoint);
+    //public void DrawArrowLine(Vector3 startPoint, Vector3 endPoint, float arrowSpacing, LineRenderer lineRenderer)
+    //{
+    //    // Calculate the direction and length of the line
+    //    Vector3 lineDirection = (endPoint - startPoint).normalized;
+    //    float lineLength = Vector3.Distance(startPoint, endPoint);
 
-        // Set the positions of the line
-        lineRenderer.positionCount = 2;
-        lineRenderer.SetPosition(0, startPoint);
-        lineRenderer.SetPosition(1, endPoint);
+    //    // Set the positions of the line
+    //    lineRenderer.positionCount = 2;
+    //    lineRenderer.SetPosition(0, startPoint);
+    //    lineRenderer.SetPosition(1, endPoint);
 
-        // Calculate the number of arrows based on the spacing
-        int numArrows = Mathf.FloorToInt(lineLength / arrowSpacing);
+    //    // Calculate the number of arrows based on the spacing
+    //    int numArrows = Mathf.FloorToInt(lineLength / arrowSpacing);
 
-        // Instantiate arrows along the line
-        for (int i = 1; i <= numArrows; i++)
-        {
-            Vector3 arrowPosition = startPoint + lineDirection * (arrowSpacing * i);
-            Quaternion arrowRotation = Quaternion.LookRotation(RotateVectorAroundY(lineDirection, -90));
-            GameObject arrow = Instantiate(arrowPrefab, arrowPosition, arrowRotation);
-            arrows.Add(arrow);
-        }
-    }
+    //    // Instantiate arrows along the line
+    //    for (int i = 1; i <= numArrows; i++)
+    //    {
+    //        Vector3 arrowPosition = startPoint + lineDirection * (arrowSpacing * i);
+    //        Quaternion arrowRotation = Quaternion.LookRotation(RotateVectorAroundY(lineDirection, -90));
+    //        GameObject arrow = Instantiate(arrowPrefab, arrowPosition, arrowRotation);
+    //        arrows.Add(arrow);
+    //    }
+    //}
 
     private Vector3 RotateVectorAroundY(Vector3 vector, float angle)
     {
@@ -201,7 +201,7 @@ public class SetNavigationTarget : MonoBehaviour
             SetChildrenActiveRecursive(GameObject.Find("NavigationTarget"), false);
         }
 
-    currentTarget = target;
+        currentTarget = target;
         if (currentTarget != null)
         {
             SetParentsActiveRecursive(currentTarget, true);

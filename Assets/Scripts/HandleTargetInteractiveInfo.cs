@@ -18,22 +18,11 @@ public class HandleTargetInteractiveInfo : MonoBehaviour
         TextAsset fileAsset = Resources.Load<TextAsset>("InteractiveData");
         string fileContent = fileAsset.text; // doesnt get \n
 
-        // doesnt work in smartphone
-        //string filePath = Path.Combine(Application.streamingAssetsPath, "InteractiveData.csv");
-        //string fileContent1 = File.ReadAllText(filePath);
-        //debugText.text += "2\n" + fileContent1;
-        //debugText.text += "2TTT\n";
-
-
-        //List<string[]> data = ReadCSVFile(Path.Combine(Application.dataPath, "InteractiveData.csv"));
-        //debugText.text += "3TTTT\n" + data[0];
-
         List<string[]> data;
         try
         {
             data = ConvertTextToList(fileContent);
             AddInteractiveTextRecursive(gameObject, data);
-            SetChildrenActiveRecursive(gameObject, true);
         }
         catch (Exception e)
         {
