@@ -40,8 +40,7 @@ public class SetNavigationTarget : MonoBehaviour
     private List<GameObject> arrows;
     int iter= 0;
 
-    [SerializeField]
-    private bool enableAllOtherTargets = false;
+    private bool enableAllOtherTargets;
 
 
     // Start is called before the first frame update
@@ -55,6 +54,8 @@ public class SetNavigationTarget : MonoBehaviour
         SetChildrenActiveRecursive(parentObject, false);
 
         arrows = new List<GameObject>();
+
+        enableAllOtherTargets = false;
 
     }
 

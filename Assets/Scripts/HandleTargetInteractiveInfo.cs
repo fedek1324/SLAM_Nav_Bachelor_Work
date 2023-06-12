@@ -33,7 +33,7 @@ public class HandleTargetInteractiveInfo : MonoBehaviour
         {
             data = ConvertTextToList(fileContent);
             AddInteractiveTextRecursive(gameObject, data);
-            SetChildrenActiveRecursive(gameObject, true);
+            //SetChildrenActiveRecursive(gameObject, true);
         }
         catch (Exception e)
         {
