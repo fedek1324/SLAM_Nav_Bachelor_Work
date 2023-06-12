@@ -14,7 +14,7 @@ public class SetNavigationTarget : MonoBehaviour
 
     private float positionYOffset = -1.5f;
     private float yLineOffset = 0.5f;
-    private GameObject currentTarget;
+    public GameObject currentTarget;
 
     [SerializeField] 
     private TMP_Text mainTitle;

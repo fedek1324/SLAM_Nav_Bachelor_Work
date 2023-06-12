@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
@@ -35,6 +36,12 @@ public class ArQrScript : MonoBehaviour
 
     GameObject area;
     GameObject mainPanel;
+
+    [SerializeField]
+    GameObject navTargets;
+
+    [SerializeField]
+    private TMP_Text mainTitle;
 
     public void EnableAngleUse()
     {
@@ -102,11 +109,19 @@ public class ArQrScript : MonoBehaviour
         GameObject qrCodePoint = GameObject.Find(targetText);
         if (qrCodePoint != null)
         {
+
             // Reset position and rotation of ARSession
             if (doSessionReset)
             {
                 session.Reset();
             }
+
+            GameObject currentTarget = indicator.GetComponent<SetNavigationTarget>().currentTarget;
+            if (currentTarget == null)
+            {
+                mainTitle.text = "Выберите пункт назначения";
+            }
+
 
             Vector3 qrCodePointPos = (qrCodePoint.transform.position);
             Quaternion qrCodePointRot = (qrCodePoint.transform.rotation);
@@ -139,6 +154,9 @@ public class ArQrScript : MonoBehaviour
             GameObject qrScannerNew = GameObject.Find("QrScannerNew");
             qrScannerNew.transform.position = (qrCodePointPos + offsetRelativeToNewQr);
             qrScannerNew.transform.rotation = (qrCodePointRot); // to do add initial rotation
+
+
+            // ERR MB SOMEWHERE UP
         }
     }
 
@@ -147,11 +165,14 @@ public class ArQrScript : MonoBehaviour
         scanningEnabled = !scanningEnabled;
         qrCodeScanningPanel.SetActive(scanningEnabled);
 
+        navTargets.SetActive(!scanningEnabled);
+
         //area.SetActive(!scanningEnabled);
 
         mainPanel.SetActive(!scanningEnabled);
 
         indicator.GetComponent<SetNavigationTarget>().ToggleVisibility();
+
 
         if (scanningEnabled)
         {
@@ -165,10 +186,10 @@ public class ArQrScript : MonoBehaviour
 
     void OnChanged(ARTrackedImagesChangedEventArgs eventArgs)
     {
+        // Handle updated event
         ARTrackedImage trackedImage = eventArgs.updated.Last();
         if (trackedImage.trackingState == TrackingState.Tracking)
         {
-            // Handle updated event
             ToggleQrCodeScanning();
             Vector3 imagePos = (trackedImage.transform.position);
             Vector3 currentPos = (indicator.gameObject.transform.position);

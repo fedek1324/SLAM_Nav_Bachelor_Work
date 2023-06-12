@@ -29,6 +29,9 @@ namespace Assets.Scripts
 		private bool scanningEnabled = false;
 
         [SerializeField]
+        GameObject navTargets;
+
+        [SerializeField]
         Text debugText;
 
         private GameObject findTarget(string targetText)
@@ -138,10 +141,19 @@ namespace Assets.Scripts
 		public void ToggleScanning() {
             scanningEnabled = !scanningEnabled;
 
+            navTargets.SetActive(!scanningEnabled);
             indicator.GetComponent<LineRenderer>().enabled = !scanningEnabled;
 			qrCodeScanningPanel.SetActive(scanningEnabled);
             //area.SetActive(!scanningEnabled);
             mainPanel.SetActive(!scanningEnabled);
+
+
+            // Add functionality
+            //GameObject currentTarget = indicator.GetComponent<SetNavigationTarget>().currentTarget;
+            //if (!scanningEnabled && currentTarget == null)
+            //{
+            //    mainTitle.text = "Выберите пункт назначения";
+            //}
         }
     }
 }

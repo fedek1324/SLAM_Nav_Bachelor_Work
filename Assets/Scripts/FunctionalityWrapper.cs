@@ -9,10 +9,10 @@ public class FunctionalityWrapper : MonoBehaviour
     private ArQrScript newRecenterScript;
     private QrCodeRecenter oldRecenterScript;
 
-    [SerializeField]
     private bool usingOldRecenter = false;
     [SerializeField]
     Text debugText;
+
 
     // Start is called before the first frame update
     void Start()
