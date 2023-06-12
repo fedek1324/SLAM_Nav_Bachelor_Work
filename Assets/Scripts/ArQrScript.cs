@@ -119,7 +119,7 @@ public class ArQrScript : MonoBehaviour
             GameObject currentTarget = indicator.GetComponent<SetNavigationTarget>().currentTarget;
             if (currentTarget == null)
             {
-                mainTitle.text = "Выберите пункт назначения";
+                mainTitle.text = "ВЫБЕРИТЕ ПУНКТ НАЗНАЧЕНИЯ";
             }
 
 
